@@ -1,8 +1,11 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.util.Log;
+
 import java.net.Inet4Address;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class for the game play logic for the game
@@ -18,6 +21,9 @@ public class GamePlay {
     // Static game rules
     private static Integer MAX_ROLLS = 3;
     private static Integer MAX_ROUNDS = 10;
+
+    // Dice
+    private Dice dice;
 
     // Arrays
     private ArrayList<Dice> diceList;
@@ -36,7 +42,11 @@ public class GamePlay {
     /**
      * Constructor
      */
-    public GamePlay() {
+    public GamePlay(Dice dice) {
+        this.dice = new Dice();
+        // Set starting dice
+        this.dice = dice;
+
         // Init arraylist variables
         this.diceList = new ArrayList<>();
         this.roundsScore = new ArrayList<>();
@@ -66,6 +76,30 @@ public class GamePlay {
      */
     public Integer getMaxRounds() {
         return MAX_ROUNDS;
+    }
+
+    /**
+     * Start a new game
+     * @return bool if not to start a game or not, based on if a game is already in progress
+     */
+    public Boolean startGame() {
+        if(this.isStarted) {
+            return false;
+        }
+        this.addRound();
+        this.addRoll();
+        return true;
+    }
+
+    /**
+     * Check if the game is suppose to end, and do procedures needed to finish the game
+     * @return boolean if the game is ending
+     */
+    public Boolean endGame() {
+        if(isLastRound()) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -159,4 +193,192 @@ public class GamePlay {
     public void setBetType(Integer betType) {
         this.betType = betType;
     }
+
+    public void resetRolls() {
+        this.rollNr = 0;
+    }
+
+    /**
+     * Check if current round is the last round
+     * @return Boolean if it is the last round
+     */
+    public Boolean isLastRound() {
+        if(this.roundNr >= MAX_ROUNDS) {
+            return true;
+        }
+        return false;
+    }
+
+    public void roll() {
+        // Check if max rolls for a round has been reached
+        if(this.rollNr >= MAX_ROLLS) {
+            // Add a new round
+            addRound();
+            // Reset the rolls
+            resetRolls();
+
+            // Calculate score
+            saveRoundScore();
+
+            // Add the old dice to an array list
+            addDice(this.dice);
+            // Repopulate the dice with new dice values
+            this.dice.fill();
+
+            return;
+        }
+        // Add a new roll
+        addRoll();
+        this.dice.randomizeDice();
+    }
+
+    /**
+     * Return the current set of dice
+     * @return Dice class object, consists of many Die
+     */
+    public Dice getDice() {
+        return this.dice;
+    }
+
+    public ArrayList<Integer> getValues() {
+        return this.dice.getDieValues();
+    }
+
+    /**
+     * Set a specific die to chosen
+     * @param dieNr The number of the die
+     */
+    public void setDieChosen(int dieNr) {
+        this.dice.getDie(dieNr).toggleChosen();
+    }
+
+    public void saveRoundScore() {
+        Dice roundGroup = this.dice;
+        Log.d("Bet type --> ",getBetType().toString());
+        if ( getBetType() < 1 ) {
+            for (Die die : roundGroup.getDice()) {
+                if ( die.getDieValue() <= 3 ) {
+                    addScore();
+                }
+            }
+        }else {
+            int betValue = getBetType() + 3;
+            Dice usedDice = new Dice();
+            for(Integer i = 0; i < roundGroup.getDice().size(); i++){
+                Die die1 = roundGroup.getDice().get(i);
+                Log.d("die1 ---> ", die1.getDieValue().toString());
+                if (die1.getDieValue() == betValue
+                        && !usedDice.getDie(die1)) {
+                    Log.d("D1# ->", i.toString());
+                    Log.d("D1 MATCH--->", die1.getDieValue().toString());
+                    addScore();
+                    usedDice.addDie(die1);
+                    continue;
+                }
+                for(Integer x = i+1; x < roundGroup.getDice().size(); x++){
+                    Die die2 = roundGroup.getDice().get(x);
+                    Log.d("die2 ---> ", die2.getDieValue().toString());
+                    if (die1.getDieValue() + die2.getDieValue() == betValue
+                            && !usedDice.getDie(die1) && !usedDice.getDie(die2)) {
+                        Log.d("D1# ->", i.toString());
+                        Log.d("D2# ->", x.toString());
+                        Log.d("D1+D2 MATCH --->", die2.getDieValue().toString());
+                        usedDice.addDie(die1);
+                        usedDice.addDie(die2);
+                        addScore();
+                        continue;
+                    }
+                    for(Integer y = x+1; y < roundGroup.getDice().size(); y++){
+                        Die die3 = roundGroup.getDice().get(y);
+                        //Log.d("die3 ---> ", die3.getDieValue().toString());
+                        if (die1.getDieValue() + die2.getDieValue() + die3.getDieValue() == betValue
+                                && !usedDice.getDie(die1) && !usedDice.getDie(die2) && !usedDice.getDie(die3)) {
+                            Log.d("D1# ->", i.toString());
+                            Log.d("D2# ->", x.toString());
+                            Log.d("D3# ->", y.toString());
+                            Log.d("D1+D2+D3 --->", die3.getDieValue().toString());
+                            usedDice.addDie(die1);
+                            usedDice.addDie(die2);
+                            usedDice.addDie(die3);
+                            addScore();
+                            continue;
+                        }
+                        for(Integer z = y+1; z < roundGroup.getDice().size(); z++){
+                            Die die4 = roundGroup.getDice().get(z);
+                            //Log.d("die4 ---> ", die4.getDieValue().toString());
+                            if (die1.getDieValue() + die2.getDieValue() + die3.getDieValue() + die4.getDieValue() == betValue
+                                    && !usedDice.getDie(die1) && !usedDice.getDie(die2)
+                                    && !usedDice.getDie(die3) && !usedDice.getDie(die4)) {
+                                Log.d("D1# ->", i.toString());
+                                Log.d("D2# ->", x.toString());
+                                Log.d("D3# ->", y.toString());
+                                Log.d("D4# ->", z.toString());
+                                Log.d("D1+D2+D3+D4 --->", die4.getDieValue().toString());
+                                usedDice.addDie(die1);
+                                usedDice.addDie(die2);
+                                usedDice.addDie(die3);
+                                usedDice.addDie(die4);
+                                addScore();
+                                continue;
+                            }
+                            for(Integer a = z+1; a < roundGroup.getDice().size(); a++){
+                                Die die5 = roundGroup.getDice().get(a);
+                                //Log.d("die5 ---> ", die5.getDieValue().toString());
+                                if (die1.getDieValue() + die2.getDieValue()
+                                        + die3.getDieValue() + die4.getDieValue()
+                                        + die5.getDieValue() == betValue
+                                        && !usedDice.getDie(die1) && !usedDice.getDie(die2)
+                                        && !usedDice.getDie(die3) && !usedDice.getDie(die4)
+                                        && !usedDice.getDie(die5)) {
+                                    Log.d("D1# ->", i.toString());
+                                    Log.d("D2# ->", x.toString());
+                                    Log.d("D3# ->", y.toString());
+                                    Log.d("D4# ->", z.toString());
+                                    Log.d("D5# ->", a.toString());
+                                    Log.d("D1+D2+D3+D4+D5 --->", die5.getDieValue().toString());
+                                    usedDice.addDie(die1);
+                                    usedDice.addDie(die2);
+                                    usedDice.addDie(die3);
+                                    usedDice.addDie(die4);
+                                    usedDice.addDie(die5);
+                                    addScore();
+                                    continue;
+                                }
+                                for(Integer b = a+1; b < roundGroup.getDice().size(); b++){
+                                    Die die6 = roundGroup.getDice().get(b);
+                                    //Log.d("die6 ---> ", die6.getDieValue().toString());
+                                    if (die1.getDieValue() + die2.getDieValue()
+                                            + die3.getDieValue() + die4.getDieValue()
+                                            + die5.getDieValue() + die6.getDieValue() == betValue
+                                            && !usedDice.getDie(die1) && !usedDice.getDie(die2)
+                                            && !usedDice.getDie(die3) && !usedDice.getDie(die4)
+                                            && !usedDice.getDie(die5) && !usedDice.getDie(die6)) {
+                                        Log.d("D1# ->", i.toString());
+                                        Log.d("D2# ->", x.toString());
+                                        Log.d("D3# ->", y.toString());
+                                        Log.d("D4# ->", z.toString());
+                                        Log.d("D5# ->", a.toString());
+                                        Log.d("D6# ->", b.toString());
+                                        Log.d("D1+D2+D3+D4+D5+D6 --->", die6.getDieValue().toString());
+                                        usedDice.addDie(die1);
+                                        usedDice.addDie(die2);
+                                        usedDice.addDie(die3);
+                                        usedDice.addDie(die4);
+                                        usedDice.addDie(die5);
+                                        usedDice.addDie(die6);
+                                        addScore();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //Log.d("FIRST ----> ", "LOOP");
+            }
+        }
+        this.roundsScore.add(getScore());
+        Log.d("CHOSEN BET ---> ", getBetType().toString());
+        Log.d("TOTAL SCORE -->", getScore().toString());
+    }
+
 }

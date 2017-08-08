@@ -4,5 +4,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="btn_play">Start Game</string>
     <string name="btn_roll">Roll!</string>
+    <string name="txt_submit">Submit</string>
+    <string name="btn_highscore">Highscores</string>
+    <string name="btn_settings">Settings</string>
 </resources>

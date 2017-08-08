@@ -15,18 +15,19 @@
             android:id="@+id/btnRoll"
             style="@android:style/Widget.Material.Light.Button.Borderless"
             android:layout_width="132dp"
-            android:layout_height="45dp"
+            android:layout_height="48dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:text="@string/btn_roll"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.965" />
+            app:layout_constraintVertical_bias="0.965"
+            android:layout_marginEnd="8dp" />
 
         <TableLayout
-            android:layout_width="358dp"
-            android:layout_height="431dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:visibility="visible"
@@ -34,23 +35,83 @@
             app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/tlImages"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
 
             <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="1dp"
+                android:layout_height="495dp"
+                android:weightSum="100"
+                android:layout_marginBottom="10dp"
+                tools:layout_editor_absoluteY="8dp"
+                tools:layout_editor_absoluteX="8dp">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_weight="50"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/white1" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_weight="50"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/white2" />
+            </TableRow>
 
             <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="0dp"
+                android:layout_height="73dp"
+                android:layout_marginBottom="10dp"
+                tools:layout_editor_absoluteY="89dp"
+                tools:layout_editor_absoluteX="8dp">
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_weight="50"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/white3" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_weight="50"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/white4" />
+
+            </TableRow>
 
             <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="0dp"
+                android:layout_height="495dp"
+                tools:layout_editor_absoluteY="89dp"
+                tools:layout_editor_absoluteX="8dp">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_weight="50"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/white5" />
+
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_weight="50"
+                    android:clickable="true"
+                    app:srcCompat="@drawable/white6" />
+            </TableRow>
+
         </TableLayout>
 
         <SeekBar
@@ -62,11 +123,13 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.516"
+            app:layout_constraintHorizontal_bias="0.529"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/btnRoll"
             app:layout_constraintTop_toBottomOf="@+id/tlImages"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.949"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>
