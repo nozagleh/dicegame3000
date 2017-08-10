@@ -8,4 +8,6 @@ public interface FragmentListener {
     void onRollClick();
     void onDieChosen(Integer imgNr);
     void scoreFragment();
+    void onBetChange();
+    void onBetSelected(int betNr);
 }

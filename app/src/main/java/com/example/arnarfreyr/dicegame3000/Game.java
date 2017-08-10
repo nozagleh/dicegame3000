@@ -1,6 +1,8 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.app.DialogFragment;
 import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +11,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-public class Game extends AppCompatActivity
+public class Game extends FragmentActivity
         implements FragmentListener {
 
     GamePlay game;
@@ -109,5 +111,16 @@ public class Game extends AppCompatActivity
 
         // Commit the fragment changes
         transaction.commit();
+    }
+
+    @Override
+    public void onBetChange() {
+        DialogFragment betDialog = new BetDialog();
+        betDialog.show(getFragmentManager(),"fragment_bet_dialog");
+    }
+
+    @Override
+    public void onBetSelected(int betNr) {
+        game.setBetType(betNr);
     }
 }

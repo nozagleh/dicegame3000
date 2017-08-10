@@ -1,5 +1,7 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,6 +34,7 @@ public class Play extends Fragment implements View.OnClickListener {
     View view;
 
     Button btnRoll;
+    Button btnBet;
     ImageView img1;
     ImageView img2;
     ImageView img3;
@@ -77,6 +80,9 @@ public class Play extends Fragment implements View.OnClickListener {
         // Init the roll button and tie the click listener
         btnRoll = (Button)view.findViewById(R.id.btnRoll);
         btnRoll.setOnClickListener(this);
+
+        btnBet = (Button)view.findViewById(R.id.btnBet);
+        btnBet.setOnClickListener(this);
 
         // Init the image views for the dice
         img1 = (ImageView)view.findViewById(R.id.imageView);
@@ -149,6 +155,10 @@ public class Play extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btnRoll:
                 mListener.onRollClick();
+                found = true;
+                break;
+            case R.id.btnBet:
+                mListener.onBetChange();
                 found = true;
                 break;
         }
