@@ -52,7 +52,10 @@ public class Game extends AppCompatActivity
         } else {
             game.roll();
 
-            //TODO send the values to the fragment for display
+            if(game.isLastRoll()) {
+                Integer score = game.getRoundScore();
+                playFrag.displayRoundScore(score);
+            }
 
             if (playFrag != null) {
                 playFrag.updateImages(game.getDice());
@@ -72,24 +75,39 @@ public class Game extends AppCompatActivity
         }
     }
 
+    /**
+     * Start a new game
+     */
     public void startGame() {
+        // Init dice for the game
         Dice dice = new Dice();
         dice.fill();
+
+        // Init a new instance of the game
         game = new GamePlay(dice);
+        // Start the game
         game.startGame();
     }
 
+    /**
+     * Call for changing to the score fragment.
+     * There the final score of the player is displayed and the user is prompted for a name
+     */
     @Override
     public void scoreFragment() {
-
+        // Init a new score fragment
         Score newScoreFrag = new Score();
 
+        // Start a new fragment transaction
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
+        // Replace the current fragment in the fragment container
         transaction.replace(R.id.fragment_container, newScoreFrag);
+
+        // Add the old fragment to the back stack, allowing for a back button press
         transaction.addToBackStack(null);
 
+        // Commit the fragment changes
         transaction.commit();
-
     }
 }

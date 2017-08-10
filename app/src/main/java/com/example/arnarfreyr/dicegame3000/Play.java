@@ -9,9 +9,12 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -35,6 +38,8 @@ public class Play extends Fragment implements View.OnClickListener {
     ImageView img4;
     ImageView img5;
     ImageView img6;
+
+    TextView txtScore;
 
     ArrayList<ImageView> imgs;
     SparseIntArray imgFiles = new SparseIntArray();
@@ -114,6 +119,8 @@ public class Play extends Fragment implements View.OnClickListener {
         imgFiles.put(10, R.drawable.red5);
         imgFiles.put(11, R.drawable.red6);
 
+        txtScore = (TextView)view.findViewById(R.id.txtScore);
+
         // Inflate the layout for this fragment
         return view;
     }
@@ -184,5 +191,18 @@ public class Play extends Fragment implements View.OnClickListener {
         btnRoll.setText(stringId);
         // TODO set variable to change fragment on next click
         mListener.scoreFragment();
+    }
+
+    public void displayRoundScore(Integer score) {
+        Log.d("Animation -->", "Play");
+        Animation scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text);
+        scoreAnim.reset();
+        txtScore.clearAnimation();
+        txtScore.startAnimation(scoreAnim);
+
+        txtScore.setText(score.toString());
+
+        scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text_in);
+        txtScore.startAnimation(scoreAnim);
     }
 }

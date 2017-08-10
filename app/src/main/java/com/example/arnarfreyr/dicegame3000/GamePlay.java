@@ -32,6 +32,7 @@ public class GamePlay {
 
     // Bools for status checking
     private Boolean isStarted;
+    private Boolean triggerLastRoll;
 
     // Integers for keeping track of scores and game status
     private Integer betType;
@@ -54,6 +55,7 @@ public class GamePlay {
 
         // Init boolean variables
         this.isStarted = false;
+        this.triggerLastRoll = false;
 
         // Init int variables
         this.betType = 0;
@@ -86,8 +88,6 @@ public class GamePlay {
         if(this.isStarted) {
             return false;
         }
-        this.addRound();
-        this.addRoll();
         return true;
     }
 
@@ -209,6 +209,14 @@ public class GamePlay {
         return false;
     }
 
+    public Boolean isLastRoll() {
+        if (this.triggerLastRoll) {
+            this.triggerLastRoll = false;
+            return true;
+        }
+        return false;
+    }
+
     public void roll() {
         // Check if max rolls for a round has been reached
         if(this.rollNr >= MAX_ROLLS) {
@@ -216,7 +224,7 @@ public class GamePlay {
             addRound();
             // Reset the rolls
             resetRolls();
-
+            Log.d("GP -->", "Save score");
             // Calculate score
             saveRoundScore();
 
@@ -224,6 +232,8 @@ public class GamePlay {
             addDice(this.dice);
             // Repopulate the dice with new dice values
             this.dice.fill();
+
+            this.triggerLastRoll = true;
 
             return;
         }
@@ -379,6 +389,12 @@ public class GamePlay {
         this.roundsScore.add(getScore());
         Log.d("CHOSEN BET ---> ", getBetType().toString());
         Log.d("TOTAL SCORE -->", getScore().toString());
+    }
+
+    public Integer getRoundScore() {
+        Log.d("GP -->", "Get round score");
+        int scoreArrSize = this.roundsScore.size();
+        return this.roundsScore.get(scoreArrSize - 1);
     }
 
 }
