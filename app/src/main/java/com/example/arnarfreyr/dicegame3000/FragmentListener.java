@@ -9,5 +9,5 @@ public interface FragmentListener {
     void onDieChosen(Integer imgNr);
     void scoreFragment();
     void onBetChange();
-    void onBetSelected(int betNr);
+    Boolean onBetSelected(int betNr);
 }

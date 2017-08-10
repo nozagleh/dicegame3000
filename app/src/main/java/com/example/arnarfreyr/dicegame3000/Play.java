@@ -197,10 +197,11 @@ public class Play extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void updateButtonText(int stringId) {
+    public void updateButtonText(int stringId, Boolean goToScore) {
         btnRoll.setText(stringId);
         // TODO set variable to change fragment on next click
-        mListener.scoreFragment();
+        if (goToScore)
+            mListener.scoreFragment();
     }
 
     public void displayRoundScore(Integer score) {

@@ -33,6 +33,7 @@ public class GamePlay {
     // Bools for status checking
     private Boolean isStarted;
     private Boolean triggerLastRoll;
+    private Boolean successfulRoll;
 
     // Integers for keeping track of scores and game status
     private Integer betType;
@@ -56,6 +57,7 @@ public class GamePlay {
         // Init boolean variables
         this.isStarted = false;
         this.triggerLastRoll = false;
+        this.successfulRoll = false;
 
         // Init int variables
         this.betType = 0;
@@ -217,7 +219,17 @@ public class GamePlay {
         return false;
     }
 
+    public Boolean isNextToLastRoll() {
+        if (this.rollNr >= MAX_ROLLS - 1) {
+            return true;
+        }
+        return false;
+    }
+
     public void roll() {
+        Log.d("Triggered last roll?", this.triggerLastRoll.toString());
+        if(this.rollNr >= MAX_ROLLS)
+            this.triggerLastRoll = true;
         // Check if max rolls for a round has been reached
         if(this.rollNr >= MAX_ROLLS) {
             // Add a new round
@@ -233,13 +245,14 @@ public class GamePlay {
             // Repopulate the dice with new dice values
             this.dice.fill();
 
-            this.triggerLastRoll = true;
-
-            return;
+            this.successfulRoll = true;
         }
+        Log.d("ROLL NR -->", this.rollNr.toString());
         // Add a new roll
         addRoll();
         this.dice.randomizeDice();
+
+        this.successfulRoll = true;
     }
 
     /**
@@ -264,6 +277,7 @@ public class GamePlay {
 
     public void saveRoundScore() {
         Dice roundGroup = this.dice;
+        this.chosenBets.add(getBetType());
         Log.d("Bet type --> ",getBetType().toString());
         if ( getBetType() < 1 ) {
             for (Die die : roundGroup.getDice()) {
@@ -383,7 +397,6 @@ public class GamePlay {
                         }
                     }
                 }
-                //Log.d("FIRST ----> ", "LOOP");
             }
         }
         this.roundsScore.add(getScore());
@@ -397,4 +410,16 @@ public class GamePlay {
         return this.roundsScore.get(scoreArrSize - 1);
     }
 
+    public Boolean isBetDone(int betNr) {
+        for (int bet: this.chosenBets) {
+            if(betNr == bet) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Boolean betAlreadyDone() {
+        return this.chosenBets.contains(this.betType);
+    }
 }

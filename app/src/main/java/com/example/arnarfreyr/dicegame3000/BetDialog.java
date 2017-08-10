@@ -23,7 +23,7 @@ public class BetDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         chosenBet = -1;
         Log.d("IN DIAG -->", "1");
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.dialog_bet)
                 .setItems(R.array.bet_array, new DialogInterface.OnClickListener() {
                     @Override

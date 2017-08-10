@@ -102,7 +102,6 @@ public class Dice {
 
     public void randomizeDice() {
         for (Die die : this.dice) {
-            Log.d("DIE VAL -->", die.getDieValue().toString());
            die.setRandomValue();
         }
     }

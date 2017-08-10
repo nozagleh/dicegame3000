@@ -68,7 +68,6 @@ public class Die {
     public void setRandomValue() {
         if(!getIfChosen()) {
             this.dieValue = (int)(Math.random() * 6 + 1);
-            Log.d("DIE VALUE --> ", this.dieValue.toString());
         }
     }
 }

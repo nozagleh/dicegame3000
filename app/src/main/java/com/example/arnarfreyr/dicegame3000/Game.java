@@ -2,12 +2,14 @@ package com.example.arnarfreyr.dicegame3000;
 
 import android.app.DialogFragment;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -43,17 +45,30 @@ public class Game extends FragmentActivity
      */
     @Override
     public void onRollClick() {
+        Log.d("Is last roll? -->", game.isNextToLastRoll().toString());
+        Log.d("Is bet done? -->", game.betAlreadyDone().toString());
+        if (game.isNextToLastRoll() && game.betAlreadyDone()) {
+            Log.d("TOAST -->", "YES");
+            Toast betToast = Toast.makeText(this,R.string.dialog_bet,Toast.LENGTH_SHORT);
+            betToast.show();
+            return;
+        }
         Play playFrag = (Play)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        if(game.isNextToLastRoll()) {
+            if (playFrag != null) {
+                playFrag.updateButtonText(R.string.txt_next_round, false);
+            }
+        }
 
         if(game.isLastRound()) {
             //TODO do stuff when is last round
             if (playFrag != null) {
-                playFrag.updateButtonText(R.string.btn_highscore);
+                playFrag.updateButtonText(R.string.btn_highscore, true);
             }
         } else {
             game.roll();
-
             if(game.isLastRoll()) {
                 Integer score = game.getRoundScore();
                 playFrag.displayRoundScore(score);
@@ -113,6 +128,7 @@ public class Game extends FragmentActivity
         transaction.commit();
     }
 
+
     @Override
     public void onBetChange() {
         DialogFragment betDialog = new BetDialog();
@@ -120,7 +136,12 @@ public class Game extends FragmentActivity
     }
 
     @Override
-    public void onBetSelected(int betNr) {
-        game.setBetType(betNr);
+    public Boolean onBetSelected(int betNr) {
+        if(!game.isBetDone(betNr)) {
+            game.setBetType(betNr);
+            return false;
+        }
+
+        return true;
     }
 }
