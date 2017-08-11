@@ -1,9 +1,6 @@
 package com.example.arnarfreyr.dicegame3000;
 
-import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,7 +12,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -43,7 +39,12 @@ public class Play extends Fragment implements View.OnClickListener {
     ImageView img6;
 
     TextView txtScore;
+    TextView txtRollNr;
+    TextView txtRoundNr;
 
+    Boolean lockDice;
+
+    ArrayList<Integer> prevValues;
     ArrayList<ImageView> imgs;
     SparseIntArray imgFiles = new SparseIntArray();
 
@@ -69,7 +70,18 @@ public class Play extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            prevValues = savedInstanceState.getIntegerArrayList("SCORES");
+        }
+
         Log.d("Fragment --> ", "Play");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putIntegerArrayList("SCORES", mListener.getScores());
     }
 
     @Override
@@ -111,21 +123,38 @@ public class Play extends Fragment implements View.OnClickListener {
         imgs.add(img6);
 
         // Add red dices
-        imgFiles.put(0, R.drawable.white1);
-        imgFiles.put(1, R.drawable.white2);
-        imgFiles.put(2, R.drawable.white3);
-        imgFiles.put(3, R.drawable.white4);
-        imgFiles.put(4, R.drawable.white5);
-        imgFiles.put(5, R.drawable.white6);
+        imgFiles.put(0, R.drawable.red1);
+        imgFiles.put(1, R.drawable.red2);
+        imgFiles.put(2, R.drawable.red3);
+        imgFiles.put(3, R.drawable.red4);
+        imgFiles.put(4, R.drawable.red5);
+        imgFiles.put(5, R.drawable.red6);
         // Add gray dices
-        imgFiles.put(6, R.drawable.red1);
-        imgFiles.put(7, R.drawable.red2);
-        imgFiles.put(8, R.drawable.red3);
-        imgFiles.put(9, R.drawable.red4);
-        imgFiles.put(10, R.drawable.red5);
-        imgFiles.put(11, R.drawable.red6);
+        imgFiles.put(6, R.drawable.locked1);
+        imgFiles.put(7, R.drawable.locked2);
+        imgFiles.put(8, R.drawable.locked3);
+        imgFiles.put(9, R.drawable.locked4);
+        imgFiles.put(10, R.drawable.locked5);
+        imgFiles.put(11, R.drawable.locked6);
 
+        int count = 0;
+        for (ImageView iv: imgs) {
+            iv.setImageResource(imgFiles.get(count));
+            count++;
+        }
+
+        txtRollNr = (TextView)view.findViewById(R.id.txtRoll);
+        txtRoundNr = (TextView)view.findViewById(R.id.txtRound);
         txtScore = (TextView)view.findViewById(R.id.txtScore);
+        Log.d("AA","BB");
+        if(prevValues != null) {
+            Log.d("CC","DD");
+            txtRollNr.setText(prevValues.get(0));
+            txtRoundNr.setText(prevValues.get(1));
+            txtScore.setText(prevValues.get(2));
+        }
+
+        lockDice = false;
 
         // Inflate the layout for this fragment
         return view;
@@ -162,8 +191,8 @@ public class Play extends Fragment implements View.OnClickListener {
                 found = true;
                 break;
         }
-
-        if (!found) {
+        Log.d("DICE locked? -->", lockDice.toString());
+        if (!found && !lockDice) {
             Log.d("DIE -->", "clicked");
             int imgNr = getRightImg(v);
             mListener.onDieChosen(imgNr);
@@ -197,15 +226,11 @@ public class Play extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void updateButtonText(int stringId, Boolean goToScore) {
+    public void updateButtonText(int stringId) {
         btnRoll.setText(stringId);
-        // TODO set variable to change fragment on next click
-        if (goToScore)
-            mListener.scoreFragment();
     }
 
     public void displayRoundScore(Integer score) {
-        Log.d("Animation -->", "Play");
         Animation scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text);
         scoreAnim.reset();
         txtScore.clearAnimation();
@@ -215,5 +240,21 @@ public class Play extends Fragment implements View.OnClickListener {
 
         scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text_in);
         txtScore.startAnimation(scoreAnim);
+    }
+
+    public void displayRoll(Integer rollNr) {
+        txtRollNr.setText(rollNr.toString());
+    }
+
+    public void displayRound(Integer roundNr) {
+        txtRoundNr.setText(roundNr.toString());
+    }
+
+    public void lockDice() {
+        lockDice = true;
+    }
+
+    public void unlockDice() {
+        lockDice = false;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.arnarfreyr.dicegame3000;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
@@ -18,6 +19,8 @@ public class Game extends FragmentActivity
 
     GamePlay game;
 
+    Boolean setToLast;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,13 +34,31 @@ public class Game extends FragmentActivity
             }
 
             // Init the play fragment
-            Play fmPlay = new Play();
+            final Play fmPlay = new Play();
             // Add the play fragment to the fragment manager
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fmPlay).commit();
+                    .add(R.id.fragment_container, fmPlay, "FRAG_PLAY").commit();
+
+            getSupportFragmentManager().addOnBackStackChangedListener(
+                    new FragmentManager.OnBackStackChangedListener() {
+                        @Override
+                        public void onBackStackChanged() {
+                            if (getSupportFragmentManager().findFragmentByTag("FRAG_PLAY") instanceof Play) {
+                                Log.d("PLAY", "YES");
+                            }
+                        }
+                    }
+            );
         }
 
-        startGame();
+        setToLast = false;
+
+        // Init dice for the game
+        Dice dice = new Dice();
+        dice.fill();
+
+        // Init a new instance of the game
+        game = new GamePlay(dice);
     }
 
     /**
@@ -45,43 +66,45 @@ public class Game extends FragmentActivity
      */
     @Override
     public void onRollClick() {
-        Log.d("Is last roll? -->", game.isNextToLastRoll().toString());
-        Log.d("Is bet done? -->", game.betAlreadyDone().toString());
-        if (game.isNextToLastRoll() && game.betAlreadyDone()) {
-            Log.d("TOAST -->", "YES");
-            Toast betToast = Toast.makeText(this,R.string.dialog_bet,Toast.LENGTH_SHORT);
-            betToast.show();
+        if (!game.getIsStarted())
+                startGame();
+        Log.d("ENDED? -->", game.hasGameEnded().toString());
+        if (game.hasGameEnded())
+            scoreFragment();
+
+        if (game.isRollReset() && game.betAlreadyDone()) {
+            showBetToast();
             return;
         }
+
         Play playFrag = (Play)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
-        if(game.isNextToLastRoll()) {
-            if (playFrag != null) {
-                playFrag.updateButtonText(R.string.txt_next_round, false);
-            }
-        }
-
-        if(game.isLastRound()) {
-            //TODO do stuff when is last round
-            if (playFrag != null) {
-                playFrag.updateButtonText(R.string.btn_highscore, true);
-            }
-        } else {
             game.roll();
-            if(game.isLastRoll()) {
-                Integer score = game.getRoundScore();
-                playFrag.displayRoundScore(score);
+
+            if(game.endOfRound()) {
+                showScores(playFrag);
+                playFrag.updateButtonText(R.string.txt_next_round);
+                playFrag.lockDice();
+            } else {
+                playFrag.updateButtonText(R.string.btn_roll);
+                playFrag.unlockDice();
             }
 
-            if (playFrag != null) {
-                playFrag.updateImages(game.getDice());
+            if(game.endOfRound() && game.isLastRound()) {
+                playFrag.updateButtonText(R.string.txt_score);
+                scoreFragment();
             }
-        }
+
+            playFrag.displayRoll(game.getRollNr());
+            playFrag.updateImages(game.getDice());
     }
 
     @Override
     public void onDieChosen(Integer dieNr) {
+        if (!game.getIsStarted())
+            return;
+
         game.setDieChosen(dieNr);
 
         Play playFrag = (Play)
@@ -96,12 +119,6 @@ public class Game extends FragmentActivity
      * Start a new game
      */
     public void startGame() {
-        // Init dice for the game
-        Dice dice = new Dice();
-        dice.fill();
-
-        // Init a new instance of the game
-        game = new GamePlay(dice);
         // Start the game
         game.startGame();
     }
@@ -136,12 +153,38 @@ public class Game extends FragmentActivity
     }
 
     @Override
-    public Boolean onBetSelected(int betNr) {
-        if(!game.isBetDone(betNr)) {
-            game.setBetType(betNr);
-            return false;
+    public void onBetSelected(int betNr) {
+        game.setBetType(betNr);
+    }
+
+    @Override
+    public ArrayList<Integer> getScores() {
+        ArrayList<Integer> scores = new ArrayList<>();
+        scores.add(game.getRollNr());
+        scores.add(game.getRoundNr());
+        scores.add(game.getScore());
+
+        return scores;
+    }
+
+    private void showBetToast() {
+        String betText = "";
+        if(game.getBetType() == 0) {
+            betText = "Low";
+        }else {
+            Integer bet = game.getBetType() + 3;
+            betText = bet.toString();
         }
 
-        return true;
+        String message = getString(R.string.dialog_bet_text, betText);
+        Toast betToast = Toast.makeText(this, message ,Toast.LENGTH_SHORT);
+        betToast.show();
+    }
+
+    private void showScores(Play playFrag) {
+        Log.d("SCORES -->", "YES" );
+        Integer score = game.getRoundScore();
+        playFrag.displayRound(game.getRoundNr());
+        playFrag.displayRoundScore(score);
     }
 }

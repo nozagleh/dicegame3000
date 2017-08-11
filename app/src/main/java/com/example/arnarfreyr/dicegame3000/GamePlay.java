@@ -32,8 +32,8 @@ public class GamePlay {
 
     // Bools for status checking
     private Boolean isStarted;
-    private Boolean triggerLastRoll;
-    private Boolean successfulRoll;
+    private Boolean roundEnded;
+    private Boolean gameEnded;
 
     // Integers for keeping track of scores and game status
     private Integer betType;
@@ -56,8 +56,8 @@ public class GamePlay {
 
         // Init boolean variables
         this.isStarted = false;
-        this.triggerLastRoll = false;
-        this.successfulRoll = false;
+        this.roundEnded = false;
+        this.gameEnded = false;
 
         // Init int variables
         this.betType = 0;
@@ -67,41 +67,30 @@ public class GamePlay {
     }
 
     /**
-     * Get max rolls allowed per round
-     * @return Max rolls allowed
+     * Check if a new game has been started
+     * @return bool if not to start a game or not, based on if a game is already in progress
      */
-    public Integer getMaxRolls() {
-        return MAX_ROLLS;
-    }
-
-    /**
-     * Get max rounds allowed per game
-     * @return Max rounds allowed
-     */
-    public Integer getMaxRounds() {
-        return MAX_ROUNDS;
+    public Boolean getIsStarted() {
+       return this.isStarted;
     }
 
     /**
      * Start a new game
-     * @return bool if not to start a game or not, based on if a game is already in progress
      */
-    public Boolean startGame() {
-        if(this.isStarted) {
-            return false;
-        }
-        return true;
+    public void startGame() {
+        this.isStarted = true;
     }
 
     /**
      * Check if the game is suppose to end, and do procedures needed to finish the game
      * @return boolean if the game is ending
      */
-    public Boolean endGame() {
-        if(isLastRound()) {
-            return true;
-        }
-        return false;
+    public void endGame() {
+        this.gameEnded = true;
+    }
+
+    public Boolean hasGameEnded() {
+        return this.gameEnded;
     }
 
     /**
@@ -110,22 +99,6 @@ public class GamePlay {
      */
     public void addDice(Dice dice) {
         this.diceList.add(dice);
-    }
-
-    /**
-     * Remove dice group from the dice list based on location
-     * @param loc Location of the group in the list to be removed
-     */
-    public void removeDice(Integer loc) {
-        this.diceList.remove(loc);
-    }
-
-    /**
-     * Remove dice group from the dice list based on a dice group
-     * @param dice Dice group to be removed from the list
-     */
-    public void removeDice(Dice dice) {
-        this.diceList.remove(dice);
     }
 
     /**
@@ -142,21 +115,6 @@ public class GamePlay {
      */
     public void setScore(Integer score) {
         this.score = score;
-    }
-
-    /**
-     * Reset the score of the game to zero
-     */
-    public void resetScore() {
-        this.setScore(0);
-    }
-
-    /**
-     * Adds score points to the score of the game
-     * @param score Score to be added to the game score
-     */
-    public void addScore(Integer score) {
-        this.score += score;
     }
 
     /**
@@ -200,6 +158,14 @@ public class GamePlay {
         this.rollNr = 0;
     }
 
+    public Integer getRollNr() {
+        return this.rollNr;
+    }
+
+    public Integer getRoundNr() {
+        return this.roundNr;
+    }
+
     /**
      * Check if current round is the last round
      * @return Boolean if it is the last round
@@ -211,48 +177,45 @@ public class GamePlay {
         return false;
     }
 
-    public Boolean isLastRoll() {
-        if (this.triggerLastRoll) {
-            this.triggerLastRoll = false;
-            return true;
-        }
-        return false;
-    }
-
-    public Boolean isNextToLastRoll() {
-        if (this.rollNr >= MAX_ROLLS - 1) {
+    public Boolean isRollReset() {
+        if (this.rollNr > MAX_ROLLS) {
             return true;
         }
         return false;
     }
 
     public void roll() {
-        Log.d("Triggered last roll?", this.triggerLastRoll.toString());
-        if(this.rollNr >= MAX_ROLLS)
-            this.triggerLastRoll = true;
-        // Check if max rolls for a round has been reached
-        if(this.rollNr >= MAX_ROLLS) {
-            // Add a new round
-            addRound();
-            // Reset the rolls
-            resetRolls();
-            Log.d("GP -->", "Save score");
-            // Calculate score
-            saveRoundScore();
+        addRoll();
 
-            // Add the old dice to an array list
-            addDice(this.dice);
+        if( this.rollNr == 1 ) {
             // Repopulate the dice with new dice values
             this.dice.fill();
-
-            this.successfulRoll = true;
         }
-        Log.d("ROLL NR -->", this.rollNr.toString());
-        // Add a new roll
-        addRoll();
-        this.dice.randomizeDice();
+        this.roundEnded = false;
+        // Check if max rolls for a round has been reached
+        if(isRollReset()) {
+            // Add a new round
+            addRound();
+            // Calculate score
+            saveRoundScore();
+            // Add the old dice to an array list
+            addDice(this.dice);
 
-        this.successfulRoll = true;
+            this.roundEnded = true;
+        } else {
+            // Randomize the dice group
+            this.dice.randomizeDice();
+        }
+
+        if(isRollReset() && isLastRound())
+            this.gameEnded = true;
+
+        if (isRollReset()) {
+            // Reset tolls
+            resetRolls();
+        }
+
+
     }
 
     /**
@@ -278,7 +241,7 @@ public class GamePlay {
     public void saveRoundScore() {
         Dice roundGroup = this.dice;
         this.chosenBets.add(getBetType());
-        Log.d("Bet type --> ",getBetType().toString());
+
         if ( getBetType() < 1 ) {
             for (Die die : roundGroup.getDice()) {
                 if ( die.getDieValue() <= 3 ) {
@@ -290,23 +253,23 @@ public class GamePlay {
             Dice usedDice = new Dice();
             for(Integer i = 0; i < roundGroup.getDice().size(); i++){
                 Die die1 = roundGroup.getDice().get(i);
-                Log.d("die1 ---> ", die1.getDieValue().toString());
+                //Log.d("die1 ---> ", die1.getDieValue().toString());
                 if (die1.getDieValue() == betValue
                         && !usedDice.getDie(die1)) {
-                    Log.d("D1# ->", i.toString());
-                    Log.d("D1 MATCH--->", die1.getDieValue().toString());
+                    /*Log.d("D1# ->", i.toString());
+                    Log.d("D1 MATCH--->", die1.getDieValue().toString());*/
                     addScore();
                     usedDice.addDie(die1);
                     continue;
                 }
                 for(Integer x = i+1; x < roundGroup.getDice().size(); x++){
                     Die die2 = roundGroup.getDice().get(x);
-                    Log.d("die2 ---> ", die2.getDieValue().toString());
+                    //Log.d("die2 ---> ", die2.getDieValue().toString());
                     if (die1.getDieValue() + die2.getDieValue() == betValue
                             && !usedDice.getDie(die1) && !usedDice.getDie(die2)) {
-                        Log.d("D1# ->", i.toString());
+                        /*Log.d("D1# ->", i.toString());
                         Log.d("D2# ->", x.toString());
-                        Log.d("D1+D2 MATCH --->", die2.getDieValue().toString());
+                        Log.d("D1+D2 MATCH --->", die2.getDieValue().toString());*/
                         usedDice.addDie(die1);
                         usedDice.addDie(die2);
                         addScore();
@@ -317,10 +280,10 @@ public class GamePlay {
                         //Log.d("die3 ---> ", die3.getDieValue().toString());
                         if (die1.getDieValue() + die2.getDieValue() + die3.getDieValue() == betValue
                                 && !usedDice.getDie(die1) && !usedDice.getDie(die2) && !usedDice.getDie(die3)) {
-                            Log.d("D1# ->", i.toString());
+                            /*Log.d("D1# ->", i.toString());
                             Log.d("D2# ->", x.toString());
                             Log.d("D3# ->", y.toString());
-                            Log.d("D1+D2+D3 --->", die3.getDieValue().toString());
+                            Log.d("D1+D2+D3 --->", die3.getDieValue().toString());*/
                             usedDice.addDie(die1);
                             usedDice.addDie(die2);
                             usedDice.addDie(die3);
@@ -333,11 +296,11 @@ public class GamePlay {
                             if (die1.getDieValue() + die2.getDieValue() + die3.getDieValue() + die4.getDieValue() == betValue
                                     && !usedDice.getDie(die1) && !usedDice.getDie(die2)
                                     && !usedDice.getDie(die3) && !usedDice.getDie(die4)) {
-                                Log.d("D1# ->", i.toString());
+                                /*Log.d("D1# ->", i.toString());
                                 Log.d("D2# ->", x.toString());
                                 Log.d("D3# ->", y.toString());
                                 Log.d("D4# ->", z.toString());
-                                Log.d("D1+D2+D3+D4 --->", die4.getDieValue().toString());
+                                Log.d("D1+D2+D3+D4 --->", die4.getDieValue().toString());*/
                                 usedDice.addDie(die1);
                                 usedDice.addDie(die2);
                                 usedDice.addDie(die3);
@@ -354,12 +317,12 @@ public class GamePlay {
                                         && !usedDice.getDie(die1) && !usedDice.getDie(die2)
                                         && !usedDice.getDie(die3) && !usedDice.getDie(die4)
                                         && !usedDice.getDie(die5)) {
-                                    Log.d("D1# ->", i.toString());
+                                    /*Log.d("D1# ->", i.toString());
                                     Log.d("D2# ->", x.toString());
                                     Log.d("D3# ->", y.toString());
                                     Log.d("D4# ->", z.toString());
                                     Log.d("D5# ->", a.toString());
-                                    Log.d("D1+D2+D3+D4+D5 --->", die5.getDieValue().toString());
+                                    Log.d("D1+D2+D3+D4+D5 --->", die5.getDieValue().toString());*/
                                     usedDice.addDie(die1);
                                     usedDice.addDie(die2);
                                     usedDice.addDie(die3);
@@ -377,13 +340,13 @@ public class GamePlay {
                                             && !usedDice.getDie(die1) && !usedDice.getDie(die2)
                                             && !usedDice.getDie(die3) && !usedDice.getDie(die4)
                                             && !usedDice.getDie(die5) && !usedDice.getDie(die6)) {
-                                        Log.d("D1# ->", i.toString());
+                                        /*Log.d("D1# ->", i.toString());
                                         Log.d("D2# ->", x.toString());
                                         Log.d("D3# ->", y.toString());
                                         Log.d("D4# ->", z.toString());
                                         Log.d("D5# ->", a.toString());
                                         Log.d("D6# ->", b.toString());
-                                        Log.d("D1+D2+D3+D4+D5+D6 --->", die6.getDieValue().toString());
+                                        Log.d("D1+D2+D3+D4+D5+D6 --->", die6.getDieValue().toString());*/
                                         usedDice.addDie(die1);
                                         usedDice.addDie(die2);
                                         usedDice.addDie(die3);
@@ -405,7 +368,6 @@ public class GamePlay {
     }
 
     public Integer getRoundScore() {
-        Log.d("GP -->", "Get round score");
         int scoreArrSize = this.roundsScore.size();
         return this.roundsScore.get(scoreArrSize - 1);
     }
@@ -421,5 +383,9 @@ public class GamePlay {
 
     public Boolean betAlreadyDone() {
         return this.chosenBets.contains(this.betType);
+    }
+
+    public Boolean endOfRound() {
+        return this.roundEnded;
     }
 }
