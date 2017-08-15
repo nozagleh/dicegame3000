@@ -49,6 +49,16 @@ public class GamePlay {
         // Set starting dice
         this.dice = dice;
 
+        initVariables();
+    }
+
+    public GamePlay() {
+        initVariables();
+    }
+
+    public void initVariables() {
+        this.dice = new Dice();
+
         // Init arraylist variables
         this.diceList = new ArrayList<>();
         this.roundsScore = new ArrayList<>();
@@ -162,6 +172,14 @@ public class GamePlay {
         return this.rollNr;
     }
 
+    public void setRollNr(Integer rollNr) {
+        this.rollNr = rollNr;
+    }
+
+    public void setRoundNr(Integer roundNr) {
+        this.roundNr = roundNr;
+    }
+
     public Integer getRoundNr() {
         return this.roundNr;
     }
@@ -192,14 +210,16 @@ public class GamePlay {
             this.dice.fill();
         }
         this.roundEnded = false;
+
+        if (isRollReset() && isBetDone(this.betType))
+            return;
+
         // Check if max rolls for a round has been reached
         if(isRollReset()) {
             // Add a new round
             addRound();
             // Calculate score
             saveRoundScore();
-            // Add the old dice to an array list
-            addDice(this.dice);
 
             this.roundEnded = true;
         } else {
@@ -214,8 +234,6 @@ public class GamePlay {
             // Reset tolls
             resetRolls();
         }
-
-
     }
 
     /**
@@ -224,6 +242,14 @@ public class GamePlay {
      */
     public Dice getDice() {
         return this.dice;
+    }
+
+    public void setDice(Dice dice) {
+        this.dice = dice;
+    }
+
+    public ArrayList<Dice> getAllDice() {
+        return this.diceList;
     }
 
     public ArrayList<Integer> getValues() {
@@ -363,6 +389,7 @@ public class GamePlay {
             }
         }
         this.roundsScore.add(getScore());
+        addDice(this.dice);
         Log.d("CHOSEN BET ---> ", getBetType().toString());
         Log.d("TOTAL SCORE -->", getScore().toString());
     }
@@ -370,6 +397,14 @@ public class GamePlay {
     public Integer getRoundScore() {
         int scoreArrSize = this.roundsScore.size();
         return this.roundsScore.get(scoreArrSize - 1);
+    }
+
+    public void setRoundScore(Integer roundScore) {
+        this.roundsScore.add(roundScore);
+    }
+
+    public ArrayList<Integer> getTotalScore() {
+        return this.roundsScore;
     }
 
     public Boolean isBetDone(int betNr) {
@@ -383,6 +418,14 @@ public class GamePlay {
 
     public Boolean betAlreadyDone() {
         return this.chosenBets.contains(this.betType);
+    }
+
+    public ArrayList<Integer> getBetsDone() {
+        return this.chosenBets;
+    }
+
+    public void addBet(Integer betType) {
+        this.chosenBets.add(betType);
     }
 
     public Boolean endOfRound() {

@@ -80,7 +80,7 @@ public class Play extends Fragment implements View.OnClickListener {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        Log.d("SAVE STATE -->", "YES");
         outState.putIntegerArrayList("SCORES", mListener.getScores());
     }
 

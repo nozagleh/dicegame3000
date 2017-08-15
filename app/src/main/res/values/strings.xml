@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">dicegame3000</string>
 
+    <string name="frag_score">FRAG_SCORE</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -20,4 +22,18 @@
     <string name="lbl_roll">Roll</string>
     <string name="lbl_round">Round</string>
     <string name="lbl_score">Score</string>
+
+    <!-- PREFERENCE STRINGS -->
+    <string name="preference_set">PREF_SET</string>
+    <string name="preference_roll_nr">ROLL_NR</string>
+    <string name="preference_roll_nr_default">0</string>
+    <string name="preference_round_nr">ROUND NR</string>
+    <string name="preference_rolls">ROLLS</string>
+    <string name="preference_chosen_dice">CHOSEN_DICE</string>
+    <string name="preference_scores">SCORES</string>
+    <string name="preference_current_dice">CURRENT_DICE</string>
+    <string name="preference_done_bets">DONE_BETS</string>
+    <string name="preference_game_ended">GAME_ENDED</string>
+
+    <string name="txt_game_finished">Please enter score</string>
 </resources>
