@@ -18,7 +18,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Init elements in the activity
         btnPlay = (Button)findViewById(R.id.btnPlay);
+        btnPlay.setText(R.string.btn_play);
         btnScore = (Button)findViewById(R.id.btnScore);
+        btnScore.setText(R.string.btn_highscore);
     }
 
     /**

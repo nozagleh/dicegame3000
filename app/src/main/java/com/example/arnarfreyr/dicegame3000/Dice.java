@@ -1,5 +1,7 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -31,9 +33,8 @@ public class Dice {
 
     /**
      * Set dice array list
-     * @param dice ArrayList of dice
      */
-    public void setDice(ArrayList<Die> dice) {
+    public void setDice() {
         this.dice = dice;
     }
 
@@ -44,6 +45,18 @@ public class Dice {
      */
     public Die getDie(Integer loc) {
         return this.dice.get(loc);
+    }
+
+    /**
+     * Check if die is present in dice list
+     * @param die Single die
+     * @return bool if present
+     */
+    public Boolean getDie(Die die) {
+        if (this.dice.contains(die)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -69,5 +82,37 @@ public class Dice {
      */
     public  void removeDie(Die die) {
         this.dice.remove(die);
+    }
+
+    public void addDie(Die die) {
+        this.dice.add(die);
+    }
+
+    public void addDie() {
+        Die die = new Die();
+        this.dice.add(die);
+    }
+
+    public void fill() {
+        this.dice.clear();
+        for (int i = 0; i < 6; i++) {
+            addDie();
+        }
+    }
+
+    public void randomizeDice() {
+        for (Die die : this.dice) {
+           die.setRandomValue();
+        }
+    }
+
+    public ArrayList<Integer> getDieValues() {
+        ArrayList<Integer> values = new ArrayList<>();
+
+        for (Die die: this.dice) {
+            values.add(die.getDieValue());
+        }
+
+        return values;
     }
 }

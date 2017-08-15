@@ -1,5 +1,7 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.util.Log;
+
 /**
  * Class for each die present in the game.
  *
@@ -17,7 +19,8 @@ public class Die {
      */
     public Die() {
         // Init value for die arguments
-        this.dieValue = 0;
+        int rand = (int)(Math.random() * 6 + 1);
+        this.dieValue = rand;
         this.chosen = false;
     }
 
@@ -51,5 +54,20 @@ public class Die {
      */
     public void setIfChosen(Boolean chosen) {
         this.chosen = chosen;
+    }
+
+    public void toggleChosen() {
+        if (this.chosen) {
+            this.chosen = false;
+
+            return;
+        }
+        this.chosen = true;
+    }
+
+    public void setRandomValue() {
+        if(!getIfChosen()) {
+            this.dieValue = (int)(Math.random() * 6 + 1);
+        }
     }
 }
