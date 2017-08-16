@@ -35,5 +35,7 @@
     <string name="preference_done_bets">DONE_BETS</string>
     <string name="preference_game_ended">GAME_ENDED</string>
 
+    <string name="txt_rounds">Round</string>
+    <string name="txt_points">pts</string>
     <string name="txt_game_finished">Please enter score</string>
 </resources>

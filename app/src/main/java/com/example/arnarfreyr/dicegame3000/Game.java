@@ -89,6 +89,7 @@ public class Game extends FragmentActivity
             String tempDiceRolls = sharedPreferences.getString(getString(R.string.preference_rolls), "-1");
             String[] diceRolls = tempDiceRolls.split(",");
             Log.d("DICE ROLLS -->", tempDiceRolls);
+            game.getAllDice().clear();
             Dice dice = new Dice();
             for (int i = 0; i < diceRolls.length; i++) {
                 Die die = new Die();
@@ -105,7 +106,7 @@ public class Game extends FragmentActivity
 
             String tempScores = sharedPreferences.getString(getString(R.string.preference_scores), "-1");
             String[] scores = tempScores.split(",");
-
+            game.getTotalScore().clear();
             for (int i = 0; i < scores.length; i++) {
                 game.setRoundScore(Integer.valueOf(scores[i]));
             }
@@ -128,6 +129,7 @@ public class Game extends FragmentActivity
 
             String tempBets = sharedPreferences.getString(getString(R.string.preference_done_bets), "-1");
             String[] chosenBets = tempBets.split(",");
+            game.getBetsDone().clear();
             for (int i = 0; i < chosenBets.length; i++) {
                 game.addBet(Integer.valueOf(chosenBets[i]));
             }
@@ -346,6 +348,11 @@ public class Game extends FragmentActivity
         return scores;
     }
 
+    @Override
+    public GamePlay getGame() {
+        return this.game;
+    }
+
     private void showBetToast() {
         String betText = "";
         if(game.getBetType() == 0) {
@@ -366,7 +373,6 @@ public class Game extends FragmentActivity
         playFrag.displayRound(game.getRoundNr()+1);
         playFrag.displayRoundScore(score);
     }
-
 
     public void saveScore(String playerName) {
 

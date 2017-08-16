@@ -69,12 +69,6 @@ public class Play extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            prevValues = savedInstanceState.getIntegerArrayList("SCORES");
-        }
-
-        Log.d("Fragment --> ", "Play");
     }
 
     @Override

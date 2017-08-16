@@ -13,4 +13,5 @@ public interface FragmentListener {
     void onBetChange();
     void onBetSelected(int betNr);
     ArrayList<Integer> getScores();
+    GamePlay getGame();
 }
