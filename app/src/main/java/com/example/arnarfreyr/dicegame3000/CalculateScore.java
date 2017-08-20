@@ -34,6 +34,7 @@ public class CalculateScore {
                 if (!usedDice.getDie(die)) {
                     if (bet >= 1) {
                         score += die.getDieValue();
+                        Log.d(TAG_CALCULATE_SCORE, combinations.toString());
                     }else {
                         score++;
                     }
@@ -62,7 +63,7 @@ public class CalculateScore {
                     tempScore += die.getDieValue();
                     usedDice.addDie(die);
                 }
-                Log.d(TAG_CALCULATE_SCORE, "tempScore = " + String.valueOf(tempScore));
+                //Log.d(TAG_CALCULATE_SCORE, "tempScore = " + String.valueOf(tempScore));
                 score += tempScore;
             }
         }
@@ -81,7 +82,7 @@ public class CalculateScore {
             }
         } else {
             for (Die die : dice.getDice()) {
-                if (die.getDieValue() == bet+3) {
+                if (die.getDieValue() == bet) {
                     Dice diceCombo = new Dice();
                     diceCombo.addDie(die);
                     combinations.add(diceCombo);
@@ -93,7 +94,7 @@ public class CalculateScore {
     private void calculateTwos() {
         for (int i = 0; i < dice.getDice().size() - 1; i++) {
             for (int x = i+1; x < dice.getDice().size(); x++) {
-                if (dice.getDie(i).getDieValue() + dice.getDie(x).getDieValue() == bet+3) {
+                if (dice.getDie(i).getDieValue() + dice.getDie(x).getDieValue() == bet) {
                     Dice diceCombo = new Dice();
                     diceCombo.addDie(dice.getDie(i));
                     diceCombo.addDie(dice.getDie(x));
@@ -108,7 +109,7 @@ public class CalculateScore {
             for (int x = i+1; x < dice.getDice().size() - 1; x++) {
                 for (int y = x+1; y < dice.getDice().size(); y++) {
                     if (dice.getDie(i).getDieValue() + dice.getDie(x).getDieValue() +
-                            dice.getDie(y).getDieValue() == bet+3) {
+                            dice.getDie(y).getDieValue() == bet) {
                         Dice diceCombo = new Dice();
                         diceCombo.addDie(dice.getDie(i));
                         diceCombo.addDie(dice.getDie(y));
@@ -126,7 +127,7 @@ public class CalculateScore {
                 for (int y = x+1; y < dice.getDice().size() -1; y++) {
                     for (int z = y+1; z < dice.getDice().size(); z++) {
                         if (dice.getDie(i).getDieValue() + dice.getDie(x).getDieValue() +
-                                dice.getDie(y).getDieValue() + dice.getDie(z).getDieValue() == bet+3) {
+                                dice.getDie(y).getDieValue() + dice.getDie(z).getDieValue() == bet) {
                             Dice diceCombo = new Dice();
                             diceCombo.addDie(dice.getDie(i));
                             diceCombo.addDie(dice.getDie(x));
@@ -148,7 +149,7 @@ public class CalculateScore {
                         for (int q = z+1; q < dice.getDice().size(); q++) {
                             if (dice.getDie(i).getDieValue() + dice.getDie(x).getDieValue() +
                                     dice.getDie(y).getDieValue() + dice.getDie(z).getDieValue() +
-                                    dice.getDie(q).getDieValue() == bet+3) {
+                                    dice.getDie(q).getDieValue() == bet) {
                                 Dice diceCombo = new Dice();
                                 diceCombo.addDie(dice.getDie(i));
                                 diceCombo.addDie(dice.getDie(i+1));
@@ -172,7 +173,7 @@ public class CalculateScore {
             tempScore =+ die.getDieValue();
         }
 
-        if (tempScore == bet+3) {
+        if (tempScore == bet) {
             combinations.add(diceCombo);
         }
     }

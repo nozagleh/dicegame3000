@@ -7,4 +7,6 @@
     <color name="background_material_light">#f13636</color>
     <color name="primary_text_default_material_light">#deebebeb</color>
     <color name="foreground_material_light">#ffffff</color>
+    <color name="overlay_red">#ec4343</color>
+    <color name="colorWhite">#ffffff</color>
 </resources>

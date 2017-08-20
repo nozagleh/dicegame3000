@@ -9,6 +9,7 @@
     <string name="btn_highscore">Highscores</string>
     <string name="btn_settings">Settings</string>
     <string name="btn_bet">Change bet</string>
+    <string name="btn_start">Start!</string>
     <!-- Text strings -->
     <string name="txt_next_round">Next</string>
     <string name="txt_score">0</string>
@@ -20,14 +21,20 @@
     <string name="txt_bet_chosen">Bet: %1$d</string>
     <string name="txt_bet_chosen_string">Bet: %1$s</string>
     <string name="txt_bet_low">Low</string>
+    <string name="txt_you_scored">You scored</string>
+    <string name="txt_pts">%1$s pts</string>
+    <string name="txt_total_score">Total Score: %1$s pts</string>
+    <string name="txt_end_round">Finish</string>
     <!-- Dialog strings -->
     <string name="dialog_bet">Choose a bet</string>
     <string name="dialog_bet_text">You can\'t bet %1$s again</string>
     <!-- Label strings -->
-    <string name="lbl_scores">Scores</string>
+    <string name="lbl_scores">Stats</string>
     <string name="lbl_roll">Roll</string>
     <string name="lbl_round">Round</string>
     <string name="lbl_score">Score</string>
+    <string name="lbl_player_name">Player\'s name</string>
+    <string name="lbl_name">Name</string>
     <!-- Preference Strings -->
     <string name="preference_set">PREF_SET</string>
     <string name="preference_roll_nr">ROLL_NR</string>
@@ -39,4 +46,8 @@
     <string name="preference_current_dice">CURRENT_DICE</string>
     <string name="preference_done_bets">DONE_BETS</string>
     <string name="preference_game_ended">GAME_ENDED</string>
+    <string name="preferences_text_hidden">TEXT_HIDDEN</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

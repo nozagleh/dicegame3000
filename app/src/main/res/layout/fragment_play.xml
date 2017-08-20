@@ -17,7 +17,7 @@
             style="@android:style/Widget.Material.Light.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:text="@string/btn_roll"
+            android:text="@string/btn_start"
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintBaseline_toBaselineOf="@+id/btnBet"
             app:layout_constraintLeft_toRightOf="@+id/btnBet"

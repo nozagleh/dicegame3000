@@ -1,6 +1,7 @@
 package com.example.arnarfreyr.dicegame3000;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -38,13 +39,18 @@ public class Play extends Fragment implements View.OnClickListener {
     ImageView img5;
     ImageView img6;
 
+    TextView lblScores;
+    TextView lblRoll;
+    TextView lblRound;
+    TextView lblScore;
+
     TextView txtScore;
     TextView txtRollNr;
     TextView txtRoundNr;
 
     Boolean lockDice;
+    Boolean txtHidden;
 
-    ArrayList<Integer> prevValues;
     ArrayList<ImageView> imgs;
     SparseIntArray imgFiles = new SparseIntArray();
 
@@ -69,13 +75,6 @@ public class Play extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Log.d("SAVE STATE -->", "YES");
-        outState.putIntegerArrayList("SCORES", mListener.getScores());
     }
 
     @Override
@@ -137,18 +136,31 @@ public class Play extends Fragment implements View.OnClickListener {
             count++;
         }
 
+        lblScores = (TextView)view.findViewById(R.id.lblScores);
+        lblRoll = (TextView)view.findViewById(R.id.txtRollLabel);
+        lblRound = (TextView)view.findViewById(R.id.txtRoundLabel);
+        lblScore = (TextView)view.findViewById(R.id.txtScoreLabel);
+
         txtRollNr = (TextView)view.findViewById(R.id.txtRoll);
         txtRoundNr = (TextView)view.findViewById(R.id.txtRound);
         txtScore = (TextView)view.findViewById(R.id.txtScore);
-        Log.d("AA","BB");
-        if(prevValues != null) {
-            Log.d("CC","DD");
-            txtRollNr.setText(prevValues.get(0));
-            txtRoundNr.setText(prevValues.get(1));
-            txtScore.setText(prevValues.get(2));
-        }
 
         lockDice = false;
+
+        if (mListener != null) {
+            txtHidden = mListener.getTextHidden();
+
+            if (txtHidden) {
+                lblScores.setVisibility(View.INVISIBLE);
+                lblRoll.setVisibility(View.INVISIBLE);
+                lblRound.setVisibility(View.INVISIBLE);
+                lblScore.setVisibility(View.INVISIBLE);
+
+                txtRollNr.setVisibility(View.INVISIBLE);
+                txtRoundNr.setVisibility(View.INVISIBLE);
+                txtScore.setVisibility(View.INVISIBLE);
+            }
+        }
 
         // Inflate the layout for this fragment
         return view;
@@ -178,6 +190,9 @@ public class Play extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btnRoll:
                 mListener.onRollClick();
+                if (txtHidden) {
+                    showLabels();
+                }
                 found = true;
                 break;
             case R.id.btnBet:
@@ -254,5 +269,20 @@ public class Play extends Fragment implements View.OnClickListener {
 
     public void unlockDice() {
         lockDice = false;
+    }
+
+    public void showLabels() {
+        lblScores.setVisibility(View.VISIBLE);
+        lblRoll.setVisibility(View.VISIBLE);
+        lblRound.setVisibility(View.VISIBLE);
+        lblScore.setVisibility(View.VISIBLE);
+
+        txtRollNr.setVisibility(View.VISIBLE);
+        txtRoundNr.setVisibility(View.VISIBLE);
+        txtScore.setVisibility(View.VISIBLE);
+
+        if (mListener != null) {
+            mListener.setTextHidden(false);
+        }
     }
 }

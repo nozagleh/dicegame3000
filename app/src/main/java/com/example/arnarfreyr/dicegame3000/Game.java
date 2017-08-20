@@ -17,17 +17,20 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Game extends FragmentActivity
-        implements FragmentListener {
+        implements FragmentListener, OverlayFragmentListener {
 
     private static final String TAG_PLAY_FRAG = "PLAY_FRAG";
     private static final String TAG_SCORE_FRAG = "SCORE_FRAG";
+    private static final String TAG_POPUP_FRAG = "POP_FRAG";
 
     private Play playFrag;
     private Score scoreFrag;
+    private OverlayRound overlayFrag;
 
     GamePlay game;
 
     Boolean setToLast;
+    Boolean scoreDiagOn;
 
     Boolean sharedPrefOn;
 
@@ -75,6 +78,7 @@ public class Game extends FragmentActivity
         }
 
         sharedPrefOn = false;
+        scoreDiagOn = false;
 
         setToLast = false;
     }
@@ -96,13 +100,13 @@ public class Game extends FragmentActivity
             Integer rollNr = sharedPreferences.getInt(getString(R.string.preference_roll_nr), -1);
             game.setRollNr(rollNr);
             Integer roundNr = sharedPreferences.getInt(getString(R.string.preference_round_nr), -1);
+
             game.setRoundNr(roundNr);
 
             String tempDiceRolls = sharedPreferences.getString(getString(R.string.preference_rolls), "-1");
             Dice dice = new Dice();
             if (!tempDiceRolls.isEmpty()) {
                 String[] diceRolls = tempDiceRolls.split(",");
-                Log.d("DICE ROLLS -->", tempDiceRolls);
                 game.getAllDice().clear();
 
                 for (int i = 0; i < diceRolls.length; i++) {
@@ -112,7 +116,6 @@ public class Game extends FragmentActivity
                     dice.addDie(die);
 
                     if (((i+1) % 6) == 0) {
-                        Log.d("MOD 6 -->", "true");
                         game.addDice(dice);
                         dice = new Dice();
                     }
@@ -164,6 +167,8 @@ public class Game extends FragmentActivity
                     showScores(playFrag);
             }
         }
+
+        Log.d("Game -->", "Load preferences");
     }
 
     /**
@@ -247,6 +252,8 @@ public class Game extends FragmentActivity
             }
         }
 
+        Log.d("Game -->", "save preferences");
+
         editor.apply();
     }
 
@@ -278,29 +285,35 @@ public class Game extends FragmentActivity
         Play playFrag = (Play)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_container);
 
+        if (!scoreDiagOn)
             game.roll();
+        else
+            scoreDiagOn = false;
 
-            if (game.isRollReset() && game.betAlreadyDone()) {
-                showBetToast();
-                return;
-            }
+        if (game.isRollReset() && game.betAlreadyDone()) {
+            showBetToast();
+            return;
+        }
 
-            if(game.endOfRound()) {
-                showScores(playFrag);
-                playFrag.updateButtonText(R.string.txt_next_round);
-                playFrag.lockDice();
-                //TODO ADD CALL TO OVERLAY FRAGMENT
-            } else {
-                playFrag.updateButtonText(R.string.btn_roll);
-                playFrag.unlockDice();
-            }
+        if(game.endOfRound()) {
+            showScores(playFrag);
+            playFrag.lockDice();
 
-            if(game.endOfRound() && game.isLastRound()) {
-                scoreFragment();
-            }
+            popupFragment();
 
-            playFrag.displayRoll(game.getRollNr());
-            playFrag.updateImages(game.getDice());
+        } else if (game.isLastRoll()) {
+            playFrag.updateButtonText(R.string.txt_end_round);
+        } else {
+            playFrag.updateButtonText(R.string.btn_roll);
+            playFrag.unlockDice();
+        }
+
+        if(game.endOfRound() && game.isLastRound()) {
+            scoreFragment();
+        }
+
+        playFrag.displayRoll(game.getRollNr());
+        playFrag.updateImages(game.getDice());
     }
 
     @Override
@@ -345,7 +358,25 @@ public class Game extends FragmentActivity
         // Commit the fragment changes
         transaction.commit();
 
+        setTextHidden(true);
+
         game.endGame();
+    }
+
+    public void popupFragment() {
+
+        if (findViewById(R.id.overlay_fragment) != null) {
+            overlayFrag = (OverlayRound) getSupportFragmentManager().findFragmentByTag(TAG_POPUP_FRAG);
+
+            if (overlayFrag == null) {
+                overlayFrag = new OverlayRound();
+
+                getSupportFragmentManager().beginTransaction()
+                        .setTransition(R.anim.frag_slide_in)
+                        .add(R.id.overlay_fragment, overlayFrag, TAG_POPUP_FRAG).commit();
+            }
+            scoreDiagOn = true;
+        }
     }
 
 
@@ -450,5 +481,43 @@ public class Game extends FragmentActivity
         }
 
         return listBets.toArray(new String[listBets.size()]);
+    }
+
+    @Override
+    public void onClickClose() {
+        if (overlayFrag != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .remove(overlayFrag).addToBackStack(TAG_PLAY_FRAG).commit();
+            game.roll();
+
+            if (playFrag != null)
+                playFrag.updateButtonText(R.string.btn_roll);
+        }
+        
+    }
+
+    @Override
+    public ArrayList<String> getOverlayVariables() {
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add(game.getRoundNr().toString());
+        strings.add(game.getRoundScore().toString());
+        strings.add(game.getFinalScore().toString());
+
+        return strings;
+    }
+
+    @Override
+    public Boolean getTextHidden() {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+
+        return sharedPreferences.getBoolean(getString(R.string.preferences_text_hidden), false);
+    }
+
+    @Override
+    public void setTextHidden(Boolean hidden) {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(getString(R.string.preferences_text_hidden), hidden);
+        editor.apply();
     }
 }

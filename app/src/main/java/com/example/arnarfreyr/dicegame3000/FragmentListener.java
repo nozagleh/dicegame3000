@@ -17,4 +17,7 @@ public interface FragmentListener {
     Boolean registerScore(String playerName);
     void closeActivity();
     String[] getBets();
+    Boolean getTextHidden();
+    void setTextHidden(Boolean hidden);
 }
+

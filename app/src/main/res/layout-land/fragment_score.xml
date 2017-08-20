@@ -54,6 +54,15 @@
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="8dp">
 
+                <TextView
+                    android:id="@+id/lblName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_player_name"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginStart="8dp"
+                    android:labelFor="@id/etName"/>
+
                 <EditText
                     android:id="@+id/etName"
                     android:layout_width="wrap_content"
