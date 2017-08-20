@@ -220,6 +220,10 @@ public class Play extends Fragment implements View.OnClickListener {
         }
     }
 
+    public void updateBetText(String text) {
+        btnBet.setText(text);
+    }
+
     public void updateButtonText(int stringId) {
         btnRoll.setText(stringId);
     }

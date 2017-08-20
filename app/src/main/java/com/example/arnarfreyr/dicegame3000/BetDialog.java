@@ -14,20 +14,18 @@ import android.util.Log;
  */
 
 public class BetDialog extends DialogFragment {
-
-    private int chosenBet;
-
+    // Init the fragment listener
     private FragmentListener mListener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        chosenBet = -1;
-        Log.d("IN DIAG -->", "1");
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Set the dialog title and items
         builder.setTitle(R.string.dialog_bet)
                 .setItems(R.array.bet_array, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        // Call listeners function on bet selection
                         mListener.onBetSelected(which);
                     }
                 });

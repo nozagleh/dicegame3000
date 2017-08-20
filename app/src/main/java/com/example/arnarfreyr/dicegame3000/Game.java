@@ -19,6 +19,12 @@ import java.util.ArrayList;
 public class Game extends FragmentActivity
         implements FragmentListener {
 
+    private static final String TAG_PLAY_FRAG = "PLAY_FRAG";
+    private static final String TAG_SCORE_FRAG = "SCORE_FRAG";
+
+    private Play playFrag;
+    private Score scoreFrag;
+
     GamePlay game;
 
     Boolean setToLast;
@@ -33,22 +39,26 @@ public class Game extends FragmentActivity
         // Only init fragments if the fragment container is present in activity
         if(findViewById(R.id.fragment_container) != null) {
 
-            // Init the play fragment
-            final Play fmPlay = new Play();
-            // Add the play fragment to the fragment manager
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fmPlay, "FRAG_PLAY").commit();
+            playFrag = (Play) getSupportFragmentManager().findFragmentByTag(TAG_PLAY_FRAG);
 
-            getSupportFragmentManager().addOnBackStackChangedListener(
-                    new FragmentManager.OnBackStackChangedListener() {
-                        @Override
-                        public void onBackStackChanged() {
-                            if (getSupportFragmentManager().findFragmentByTag("FRAG_PLAY") instanceof Play) {
-                                Log.d("PLAY", "YES");
+            if (playFrag == null) {
+                // Init the play fragment
+                playFrag = new Play();
+                // Add the play fragment to the fragment manager
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, playFrag, TAG_PLAY_FRAG).commit();
+
+                getSupportFragmentManager().addOnBackStackChangedListener(
+                        new FragmentManager.OnBackStackChangedListener() {
+                            @Override
+                            public void onBackStackChanged() {
+                                if (getSupportFragmentManager().findFragmentByTag(TAG_PLAY_FRAG) instanceof Play) {
+                                    Log.d("PLAY", "YES");
+                                }
                             }
                         }
-                    }
-            );
+                );
+            }
 
             // Init dice for the game
             Dice dice = new Dice();
@@ -63,6 +73,8 @@ public class Game extends FragmentActivity
                 game = new GamePlay(dice);
             }
         }
+
+        sharedPrefOn = false;
 
         setToLast = false;
     }
@@ -87,28 +99,34 @@ public class Game extends FragmentActivity
             game.setRoundNr(roundNr);
 
             String tempDiceRolls = sharedPreferences.getString(getString(R.string.preference_rolls), "-1");
-            String[] diceRolls = tempDiceRolls.split(",");
-            Log.d("DICE ROLLS -->", tempDiceRolls);
-            game.getAllDice().clear();
             Dice dice = new Dice();
-            for (int i = 0; i < diceRolls.length; i++) {
-                Die die = new Die();
-                die.setDieValue(Integer.valueOf(diceRolls[i]));
+            if (!tempDiceRolls.isEmpty()) {
+                String[] diceRolls = tempDiceRolls.split(",");
+                Log.d("DICE ROLLS -->", tempDiceRolls);
+                game.getAllDice().clear();
 
-                dice.addDie(die);
+                for (int i = 0; i < diceRolls.length; i++) {
+                    Die die = new Die();
+                    die.setDieValue(Integer.valueOf(diceRolls[i]));
 
-                if (((i+1) % 6) == 0) {
-                    Log.d("MOD 6 -->", "true");
-                    game.addDice(dice);
-                    dice = new Dice();
+                    dice.addDie(die);
+
+                    if (((i+1) % 6) == 0) {
+                        Log.d("MOD 6 -->", "true");
+                        game.addDice(dice);
+                        dice = new Dice();
+                    }
                 }
             }
 
+
             String tempScores = sharedPreferences.getString(getString(R.string.preference_scores), "-1");
-            String[] scores = tempScores.split(",");
-            game.getTotalScore().clear();
-            for (int i = 0; i < scores.length; i++) {
-                game.setRoundScore(Integer.valueOf(scores[i]));
+            if (!tempScores.isEmpty()) {
+                String[] scores = tempScores.split(",");
+                game.getTotalScore().clear();
+                for (int i = 0; i < scores.length; i++) {
+                    game.setRoundScore(Integer.valueOf(scores[i]));
+                }
             }
 
             String tempCurrentDice = sharedPreferences.getString(getString(R.string.preference_current_dice), "-1");
@@ -128,21 +146,22 @@ public class Game extends FragmentActivity
             game.setDice(dice);
 
             String tempBets = sharedPreferences.getString(getString(R.string.preference_done_bets), "-1");
-            String[] chosenBets = tempBets.split(",");
-            game.getBetsDone().clear();
-            for (int i = 0; i < chosenBets.length; i++) {
-                game.addBet(Integer.valueOf(chosenBets[i]));
+            if (!tempBets.isEmpty()) {
+                String[] chosenBets = tempBets.split(",");
+                game.getBetsDone().clear();
+                for (int i = 0; i < chosenBets.length; i++) {
+                    game.addBet(Integer.valueOf(chosenBets[i]));
+                }
             }
 
             if (sharedPreferences.getBoolean(getString(R.string.preference_game_ended), false)) {
                 scoreFragment();
             }else {
-                Play playFrag = (Play)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
                 playFrag.displayRoll(game.getRollNr());
                 playFrag.updateImages(game.getDice());
-                showScores(playFrag);
+
+                if (!tempBets.isEmpty())
+                    showScores(playFrag);
             }
         }
     }
@@ -158,69 +177,74 @@ public class Game extends FragmentActivity
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        editor.putBoolean(getString(R.string.preference_set), true);
+        editor.putBoolean(getString(R.string.preference_game_ended), game.hasGameEnded());
 
-        // Put roll and round numbers
-        editor.putInt(getString(R.string.preference_roll_nr), game.getRollNr());
-        editor.putInt(getString(R.string.preference_round_nr), game.getRoundNr());
+        if (sharedPrefOn) {
 
-        // Put values of all previous dice
-        String diceString = "";
-        Log.d("BEFORE -->", game.getAllDice().toString());
-        for (int i = 0; i < game.getAllDice().size(); i++) {
-            Log.d("SIZE? -->", String.valueOf(game.getAllDice().get(i).getDice().size()));
-            for(int x = 0; x < game.getAllDice().get(i).getDice().size(); x++) {
-                Log.d("DIE LIST -->", game.getAllDice().get(i).getDice().get(x).getDieValue().toString());
-                diceString += game.getAllDice().get(i).getDice().get(x).getDieValue() + ",";
+            editor.putBoolean(getString(R.string.preference_set), true);
+
+            // Put roll and round numbers
+            editor.putInt(getString(R.string.preference_roll_nr), game.getRollNr());
+            editor.putInt(getString(R.string.preference_round_nr), game.getRoundNr());
+
+            // Put values of all previous dice
+            String diceString = "";
+            Log.d("BEFORE -->", game.getAllDice().toString());
+            for (int i = 0; i < game.getAllDice().size(); i++) {
+                Log.d("SIZE? -->", String.valueOf(game.getAllDice().get(i).getDice().size()));
+                for(int x = 0; x < game.getAllDice().get(i).getDice().size(); x++) {
+                    Log.d("DIE LIST -->", game.getAllDice().get(i).getDice().get(x).getDieValue().toString());
+                    diceString += game.getAllDice().get(i).getDice().get(x).getDieValue() + ",";
+                }
             }
-        }
-        Log.d("DICE STRING -->", diceString);
+            Log.d("DICE STRING -->", diceString);
 
-        editor.putString(getString(R.string.preference_rolls), diceString);
+            editor.putString(getString(R.string.preference_rolls), diceString);
 
-        // Put total round scores
-        String scoresString = "";
-        for (Integer score : game.getTotalScore()) {
-            scoresString += score.toString() + ",";
-        }
-        Log.d("SCORE STRING -->", scoresString);
-
-        editor.putString(getString(R.string.preference_scores), scoresString);
-
-        // Put current dice values
-        String currentDice = "";
-        Dice d = game.getDice();
-        for (Die die : d.getDice()) {
-            Log.d("DIE CURRENT -->", die.getDieValue().toString());
-            currentDice += die.getDieValue().toString() + ",";
-        }
-        Log.d("CURRENT DICE -->", currentDice);
-
-        editor.putString(getString(R.string.preference_current_dice), currentDice);
-
-        // Put values for current chosen dice if they are chosen or not
-        String chosenString = "";
-        for (Die die : game.getDice().getDice()) {
-            if (die.getIfChosen()) {
-                chosenString += "1";
-            }else {
-                chosenString += "0";
+            // Put total round scores
+            String scoresString = "";
+            for (Integer score : game.getTotalScore()) {
+                scoresString += score.toString() + ",";
             }
-            chosenString += ",";
-        }
-        Log.d("CHOSEN DICE -->", chosenString);
+            Log.d("SCORE STRING -->", scoresString);
 
-        editor.putString(getString(R.string.preference_chosen_dice), chosenString);
+            editor.putString(getString(R.string.preference_scores), scoresString);
 
-        String betsString = "";
-        for (int i = 0; i < game.getBetsDone().size(); i++) {
-            betsString += game.getBetsDone().get(i) + ",";
-        }
+            // Put current dice values
+            String currentDice = "";
+            Dice d = game.getDice();
+            for (Die die : d.getDice()) {
+                Log.d("DIE CURRENT -->", die.getDieValue().toString());
+                currentDice += die.getDieValue().toString() + ",";
+            }
+            Log.d("CURRENT DICE -->", currentDice);
 
-        editor.putString(getString(R.string.preference_done_bets), betsString);
+            editor.putString(getString(R.string.preference_current_dice), currentDice);
 
-        if (game.hasGameEnded()) {
-            editor.putBoolean(getString(R.string.preference_game_ended), true);
+            // Put values for current chosen dice if they are chosen or not
+            String chosenString = "";
+            for (Die die : game.getDice().getDice()) {
+                if (die.getIfChosen()) {
+                    chosenString += "1";
+                }else {
+                    chosenString += "0";
+                }
+                chosenString += ",";
+            }
+            Log.d("CHOSEN DICE -->", chosenString);
+
+            editor.putString(getString(R.string.preference_chosen_dice), chosenString);
+
+            String betsString = "";
+            for (int i = 0; i < game.getBetsDone().size(); i++) {
+                betsString += game.getBetsDone().get(i) + ",";
+            }
+
+            editor.putString(getString(R.string.preference_done_bets), betsString);
+
+            if (game.hasGameEnded()) {
+                editor.putBoolean(getString(R.string.preference_game_ended), true);
+            }
         }
 
         editor.apply();
@@ -228,7 +252,6 @@ public class Game extends FragmentActivity
 
     @Override
     public void onBackPressed() {
-        Score scoreFrag = (Score)getSupportFragmentManager().findFragmentByTag(getString(R.string.frag_score));
         if ( scoreFrag != null && scoreFrag.isVisible() ) {
             Toast noBackToast = Toast.makeText(this, getString(R.string.txt_game_finished), Toast.LENGTH_SHORT);
             noBackToast.show();
@@ -242,6 +265,7 @@ public class Game extends FragmentActivity
      */
     @Override
     public void onRollClick() {
+        sharedPrefOn = true;
         if (!game.getIsStarted())
                 startGame();
 
@@ -286,9 +310,6 @@ public class Game extends FragmentActivity
 
         game.setDieChosen(dieNr);
 
-        Play playFrag = (Play)
-                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-
         if (playFrag != null) {
             playFrag.updateImages(game.getDice());
         }
@@ -308,17 +329,18 @@ public class Game extends FragmentActivity
      */
     @Override
     public void scoreFragment() {
+        sharedPrefOn = false;
         // Init a new score fragment
-        Score newScoreFrag = new Score();
+        scoreFrag = new Score();
 
         // Start a new fragment transaction
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace the current fragment in the fragment container
-        transaction.replace(R.id.fragment_container, newScoreFrag, getString(R.string.frag_score));
+        transaction.replace(R.id.fragment_container, scoreFrag, TAG_SCORE_FRAG);
 
         // Add the old fragment to the back stack, allowing for a back button press
-        transaction.addToBackStack(null);
+        transaction.remove(playFrag);
 
         // Commit the fragment changes
         transaction.commit();
@@ -336,6 +358,17 @@ public class Game extends FragmentActivity
     @Override
     public void onBetSelected(int betNr) {
         game.setBetType(betNr);
+
+        String betText = "";
+
+        if (betNr == 0) {
+            betText = String.format(getString(R.string.txt_bet_chosen_string), getString(R.string.txt_bet_low));
+        } else {
+            betText = String.format(getString(R.string.txt_bet_chosen), betNr+3);
+        }
+
+        playFrag.updateBetText(betText);
+
     }
 
     @Override
@@ -374,7 +407,22 @@ public class Game extends FragmentActivity
         playFrag.displayRoundScore(score);
     }
 
-    public void saveScore(String playerName) {
+    @Override
+    public Boolean registerScore(String playerName) {
+        UserData user = new UserData(playerName, game.getFinalScore());
 
+        SQLManager sql = new SQLManager(this);
+
+        return sql.insertUser(user);
+    }
+
+    @Override
+    public void closeActivity() {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+
+        this.finish();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,7 +17,8 @@ import java.util.ArrayList;
  */
 
 public class ScoreRecyclerViewAdapter extends RecyclerView.Adapter<ScoreRecyclerViewAdapter.ViewHolder> {
-    private ArrayList<Integer> mScores;
+    private Context context;
+    private ArrayList<UserData> mScores;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -29,7 +31,8 @@ public class ScoreRecyclerViewAdapter extends RecyclerView.Adapter<ScoreRecycler
         }
     }
 
-    public ScoreRecyclerViewAdapter(ArrayList<Integer> scores) {
+    public ScoreRecyclerViewAdapter(Context context, ArrayList<UserData> scores) {
+        this.context = context;
         this.mScores = scores;
     }
 
@@ -45,8 +48,15 @@ public class ScoreRecyclerViewAdapter extends RecyclerView.Adapter<ScoreRecycler
 
     @Override
     public void onBindViewHolder(ScoreRecyclerViewAdapter.ViewHolder holder, int position) {
-        holder.txtRound.setText("Round " + String.valueOf(position+1));
-        holder.txtScore.setText(this.mScores.get(position).toString());
+        String nameOrRound = "";
+        nameOrRound = String.format(context.getResources().getString(R.string.txt_rounds_number), String.valueOf(position + 1));
+        if (this.mScores.get(position).getName() != null) {
+            nameOrRound = this.mScores.get(position).getName();
+        }
+        holder.txtRound.setText(nameOrRound);
+
+        String score = String.valueOf(this.mScores.get(position).getScore());
+        holder.txtScore.setText(score);
     }
 
     @Override

@@ -268,6 +268,20 @@ public class GamePlay {
         Dice roundGroup = this.dice;
         this.chosenBets.add(getBetType());
 
+        CalculateScore calc = new CalculateScore(roundGroup, getBetType());
+        setScore(calc.calculateScore());
+
+        this.roundsScore.add(getScore());
+        addDice(this.dice);
+        this.score = 0;
+        Log.d("CHOSEN BET ---> ", getBetType().toString());
+        Log.d("TOTAL SCORE -->", getScore().toString());
+    }
+
+    public void TEMPsaveRoundScore() {
+        Dice roundGroup = this.dice;
+        this.chosenBets.add(getBetType());
+
         if ( getBetType() < 1 ) {
             for (Die die : roundGroup.getDice()) {
                 if ( die.getDieValue() <= 3 ) {
@@ -390,6 +404,7 @@ public class GamePlay {
         }
         this.roundsScore.add(getScore());
         addDice(this.dice);
+        this.score = 0;
         Log.d("CHOSEN BET ---> ", getBetType().toString());
         Log.d("TOTAL SCORE -->", getScore().toString());
     }
@@ -405,6 +420,15 @@ public class GamePlay {
 
     public ArrayList<Integer> getTotalScore() {
         return this.roundsScore;
+    }
+
+    public Integer getFinalScore() {
+        int score = 0;
+        for (int roundScore : this.roundsScore) {
+            score += roundScore;
+        }
+
+        return score;
     }
 
     public Boolean isBetDone(int betNr) {

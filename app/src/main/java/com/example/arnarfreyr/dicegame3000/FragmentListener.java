@@ -14,4 +14,6 @@ public interface FragmentListener {
     void onBetSelected(int betNr);
     ArrayList<Integer> getScores();
     GamePlay getGame();
+    Boolean registerScore(String playerName);
+    void closeActivity();
 }

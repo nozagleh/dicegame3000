@@ -1,6 +1,7 @@
 package com.example.arnarfreyr.dicegame3000;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 /**
@@ -33,6 +39,9 @@ public class Score extends Fragment {
     protected RecyclerView mRecyclerView;
     protected RecyclerView.Adapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
+
+    private Button btnSubmit;
+    private EditText txtName;
 
     public Score() {
         // Required empty public constructor
@@ -75,13 +84,34 @@ public class Score extends Fragment {
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rcView);
 
-        mAdapter = new ScoreRecyclerViewAdapter(mGame.getTotalScore());
+        ArrayList<UserData> data = new ArrayList<>();
+        for (int score: mGame.getTotalScore()) {
+            UserData ud = new UserData();
+            ud.setScore(score);
+            data.add(ud);
+        }
+        mAdapter = new ScoreRecyclerViewAdapter(getContext(), data);
 
         mRecyclerView.setAdapter(mAdapter);
 
         mLayoutManager = new LinearLayoutManager(getActivity());
 
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        txtName = (EditText) view.findViewById(R.id.etName);
+
+        btnSubmit = (Button)view.findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener.registerScore(txtName.getText().toString())) {
+                    mListener.closeActivity();
+                } else {
+                    // TODO add toast on fail
+                }
+            }
+        });
     }
 
     @Override
@@ -104,9 +134,4 @@ public class Score extends Fragment {
         // Release the fragment listener
         mListener = null;
     }
-
-    public void addRecyclerList() {
-
-    }
-
 }
