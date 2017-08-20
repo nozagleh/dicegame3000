@@ -30,6 +30,8 @@ public class GamePlay {
     private ArrayList<Integer> roundsScore;
     private ArrayList<Integer> chosenBets;
 
+    private String[] bets = {"Low", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+
     // Bools for status checking
     private Boolean isStarted;
     private Boolean roundEnded;
@@ -273,9 +275,9 @@ public class GamePlay {
 
         this.roundsScore.add(getScore());
         addDice(this.dice);
-        this.score = 0;
         Log.d("CHOSEN BET ---> ", getBetType().toString());
         Log.d("TOTAL SCORE -->", getScore().toString());
+        this.score = 0;
     }
 
     public void TEMPsaveRoundScore() {

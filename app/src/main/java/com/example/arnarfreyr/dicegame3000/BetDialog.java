@@ -20,9 +20,10 @@ public class BetDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String[] bets = mListener.getBets();
         // Set the dialog title and items
         builder.setTitle(R.string.dialog_bet)
-                .setItems(R.array.bet_array, new DialogInterface.OnClickListener() {
+                .setItems(bets, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // Call listeners function on bet selection

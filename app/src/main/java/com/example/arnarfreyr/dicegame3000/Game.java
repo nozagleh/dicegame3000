@@ -289,13 +289,13 @@ public class Game extends FragmentActivity
                 showScores(playFrag);
                 playFrag.updateButtonText(R.string.txt_next_round);
                 playFrag.lockDice();
+                //TODO ADD CALL TO OVERLAY FRAGMENT
             } else {
                 playFrag.updateButtonText(R.string.btn_roll);
                 playFrag.unlockDice();
             }
 
             if(game.endOfRound() && game.isLastRound()) {
-                playFrag.updateButtonText(R.string.txt_score);
                 scoreFragment();
             }
 
@@ -357,14 +357,21 @@ public class Game extends FragmentActivity
 
     @Override
     public void onBetSelected(int betNr) {
-        game.setBetType(betNr);
+        String[] betsAvailable = getBets();
+        Integer bet;
+        if (betsAvailable[betNr].equals("Low"))
+            bet = 0;
+        else
+            bet = Integer.valueOf(betsAvailable[betNr]);
 
-        String betText = "";
+        game.setBetType(bet);
 
-        if (betNr == 0) {
+        String betText;
+
+        if (bet == 0) {
             betText = String.format(getString(R.string.txt_bet_chosen_string), getString(R.string.txt_bet_low));
         } else {
-            betText = String.format(getString(R.string.txt_bet_chosen), betNr+3);
+            betText = String.format(getString(R.string.txt_bet_chosen), bet);
         }
 
         playFrag.updateBetText(betText);
@@ -391,7 +398,7 @@ public class Game extends FragmentActivity
         if(game.getBetType() == 0) {
             betText = "Low";
         }else {
-            Integer bet = game.getBetType() + 3;
+            Integer bet = game.getBetType();
             betText = bet.toString();
         }
 
@@ -424,5 +431,24 @@ public class Game extends FragmentActivity
         editor.apply();
 
         this.finish();
+    }
+
+    @Override
+    public String[] getBets() {
+        String[] bets = getResources().getStringArray(R.array.bet_array);
+        ArrayList<String> listBets = new ArrayList<>();
+
+        for (String bet: bets) {
+            if (bet.equals("Low"))
+                bet = "0";
+            if (!game.getBetsDone().contains(Integer.valueOf(bet))) {
+                if (bet.equals("0"))
+                    listBets.add("Low");
+                else
+                    listBets.add(bet);
+            }
+        }
+
+        return listBets.toArray(new String[listBets.size()]);
     }
 }
