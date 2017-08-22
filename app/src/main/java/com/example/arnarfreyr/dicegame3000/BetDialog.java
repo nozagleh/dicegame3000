@@ -31,6 +31,7 @@ public class BetDialog extends DialogFragment {
                     }
                 });
 
+        // Return the builder create
         return builder.create();
     }
 

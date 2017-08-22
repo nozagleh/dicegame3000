@@ -22,7 +22,7 @@
     <string name="txt_rounds">Round</string>
     <string name="txt_rounds_number">Round %1$s</string>
     <string name="txt_points">pts</string>
-    <string name="txt_game_finished">Please enter score</string>
+    <string name="txt_game_finished">Please enter name</string>
     <string name="txt_bet_chosen">Bet: %1$d</string>
     <string name="txt_bet_chosen_string">Bet: %1$s</string>
     <string name="txt_bet_low">Low</string>

@@ -9,47 +9,71 @@ import java.util.ArrayList;
  */
 
 public class CalculateScore {
-
-    private static String TAG_CALCULATE_SCORE = "CalculateScore";
-
+    // Init private variables
     private Dice dice;
     private Dice usedDice;
     private ArrayList<Dice> combinations;
 
+    // Init integers for the bet and the score
     private int bet;
     private int score;
 
+    /**
+     * Constructor that takes in a Dice group and the chosen bet
+     * @param dice Dice group, dice of the round
+     * @param bet int Bet number
+     */
     public CalculateScore(Dice dice, int bet) {
+        // Set the dice
         this.dice = dice;
+        // Init the used dice group to an empty Dice group
         usedDice = new Dice();
+        // Set the bet
         this.bet = bet;
+        // Set the score to 0
         score = 0;
+
+        // Init the array list for all possible combinations
         combinations = new ArrayList<>();
     }
 
+    /**
+     * Calculate the score
+     * @return int score of the dice group for the current bet
+     */
     public int calculateScore() {
+        // Calculate the ones
         calculateOnes();
+
+        // Iterate through the combinations as of now
         for (Dice d : combinations) {
+            // Go through every Die
             for (Die die : d.getDice()) {
+                // Check if the die has not been used before
                 if (!usedDice.getDie(die)) {
+                    // Check if the bet is greater or equal to 1
                     if (bet >= 1) {
+                        // Add the value of the die to the score
                         score += die.getDieValue();
-                        Log.d(TAG_CALCULATE_SCORE, combinations.toString());
                     }else {
+                        // Otherwise add one point to the score
                         score++;
                     }
+
+                    // Add the die to the used dice
                     usedDice.addDie(die);
-                    //Log.d(TAG_CALCULATE_SCORE, die.getDieValue().toString());
                 }
             }
         }
 
+        // Calculate the rest of the combinations, from 2-6
         calculateTwos();
         calculateThrees();
         calculateFours();
         calculateFives();
         calculateSixes();
 
+        // Iterate again through the combinations
         for (Dice d : combinations) {
             int tempScore = 0;
             boolean anyDiceUsed = false;
