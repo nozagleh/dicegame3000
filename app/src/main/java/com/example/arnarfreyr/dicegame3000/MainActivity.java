@@ -18,9 +18,25 @@ public class MainActivity extends AppCompatActivity {
 
         // Init elements in the activity
         btnPlay = (Button)findViewById(R.id.btnPlay);
-        btnPlay.setText(R.string.btn_play);
         btnScore = (Button)findViewById(R.id.btnScore);
-        btnScore.setText(R.string.btn_highscore);
+
+        // Button play on click listener
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start game
+                startGame(v);
+            }
+        });
+
+        // Button highscore on click listener
+        btnScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show highscore
+                showHighScore(v);
+            }
+        });
     }
 
     /**
@@ -28,8 +44,16 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void startGame(View view) {
+        initActivity(Game.class);
+    }
+
+    public void showHighScore(View view) {
+        initActivity(Highscore.class);
+    }
+
+    public void initActivity(Class c) {
         // Create a new intent for the game activity
-        Intent intent = new Intent(this, Game.class);
+        Intent intent = new Intent(this, c);
         // Start the game activity
         startActivity(intent);
     }
