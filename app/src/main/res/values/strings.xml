@@ -1,6 +1,11 @@
 <resources>
     <!-- APP NAME -->
     <string name="app_name">6x Dice</string>
+
+    <!-- Activites -->
+    <string name="label_activity_game">Game</string>
+    <string name="label_activity_highscore">Highscore</string>
+    <string name="label_activity_settings">Settings</string>
     <!-- Fragment strings -->
     <string name="frag_score">FRAG_SCORE</string>
     <!-- Button strings -->
