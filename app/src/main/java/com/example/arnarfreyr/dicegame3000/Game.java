@@ -368,13 +368,14 @@ public class Game extends FragmentActivity
         if (findViewById(R.id.overlay_fragment) != null) {
             overlayFrag = (OverlayRound) getSupportFragmentManager().findFragmentByTag(TAG_POPUP_FRAG);
 
-            if (overlayFrag == null) {
+            if (overlayFrag == null)
                 overlayFrag = new OverlayRound();
 
-                getSupportFragmentManager().beginTransaction()
-                        .setTransition(R.anim.frag_slide_in)
-                        .add(R.id.overlay_fragment, overlayFrag, TAG_POPUP_FRAG).commit();
-            }
+            getSupportFragmentManager().beginTransaction()
+                    .setTransition(R.anim.frag_slide_in)
+                    .add(R.id.overlay_fragment, overlayFrag, TAG_POPUP_FRAG)
+                    .addToBackStack(null)
+                    .commit();
             scoreDiagOn = true;
         }
     }
@@ -485,9 +486,19 @@ public class Game extends FragmentActivity
 
     @Override
     public void onClickClose() {
-        if (overlayFrag != null) {
+        Log.d("Game", "clicked close popup frag");
+
+        if (findViewById(R.id.overlay_fragment) != null) {
+            overlayFrag = (OverlayRound) getSupportFragmentManager().findFragmentByTag(TAG_POPUP_FRAG);
+
+            if (overlayFrag == null)
+                overlayFrag = new OverlayRound();
+
             getSupportFragmentManager().beginTransaction()
-                    .remove(overlayFrag).addToBackStack(TAG_PLAY_FRAG).commit();
+                    .remove(overlayFrag)
+                    .addToBackStack(TAG_POPUP_FRAG)
+                    .commit();
+
             game.roll();
 
             if (playFrag != null)

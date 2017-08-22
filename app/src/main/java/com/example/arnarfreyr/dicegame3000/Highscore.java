@@ -1,5 +1,6 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,10 @@ public class Highscore extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_highscore);
 
+        ActionBar aB = getSupportActionBar();
+        aB.setDisplayHomeAsUpEnabled(true);
+
+
         mRecyclerView = (RecyclerView) findViewById(R.id.scoreView);
 
         ArrayList<UserData> userData;
@@ -33,5 +38,11 @@ public class Highscore extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
