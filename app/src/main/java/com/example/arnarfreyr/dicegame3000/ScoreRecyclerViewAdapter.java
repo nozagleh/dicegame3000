@@ -13,15 +13,21 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
+ * Recycler view adapter, for the various recycler lists in the app
+ *
  * Created by arnarfreyr on 16.8.2017.
  */
 
 public class ScoreRecyclerViewAdapter extends RecyclerView.Adapter<ScoreRecyclerViewAdapter.ViewHolder> {
+    // Init the context
     private Context context;
+
+    // Init an array list for the user data
     private ArrayList<UserData> mScores;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        // Init the text views
         public TextView txtRound;
         public TextView txtScore;
         public ViewHolder(View v) {
@@ -31,34 +37,52 @@ public class ScoreRecyclerViewAdapter extends RecyclerView.Adapter<ScoreRecycler
         }
     }
 
+    /**
+     * Constructor that takes in the context of the app and the user data to be used
+     * @param context App context
+     * @param scores UserData scores for the rounds
+     */
     public ScoreRecyclerViewAdapter(Context context, ArrayList<UserData> scores) {
+        // Set the variables
         this.context = context;
         this.mScores = scores;
     }
 
     @Override
     public ScoreRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
+        // Inflate a new view with the custom recycler view XML
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.round_listing, parent, false);
 
-        ViewHolder vh = new ViewHolder(itemView);
-        return vh;
+        // Return a view holder
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ScoreRecyclerViewAdapter.ViewHolder holder, int position) {
-        String nameOrRound = "";
+        // Init an empty string
+        String nameOrRound;
+
+        // Set the string to the round number
         nameOrRound = String.format(context.getResources().getString(R.string.txt_rounds_number), String.valueOf(position + 1));
+
+        // If the name is not empty for this position, set name instead of round
         if (this.mScores.get(position).getName() != null) {
             nameOrRound = this.mScores.get(position).getName();
         }
+
+        // Set the round/name text
         holder.txtRound.setText(nameOrRound);
 
+        // Assemble a string with the score and set it to the text view
         String score = String.valueOf(this.mScores.get(position).getScore());
         holder.txtScore.setText(score);
     }
 
+    /**
+     * Returns the item count in the recycler view
+     * @return int count of objects
+     */
     @Override
     public int getItemCount() {
         return this.mScores.size();

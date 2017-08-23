@@ -5,6 +5,11 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
+ * Class for calculating the score of each round.
+ * Runs through each possible combination from 1 to 6 dice
+ * If any of those combinations equal to the bet set then
+ * the score will be added to the users total score
+ *
  * Created by arnarfreyr on 20.8.2017.
  */
 
@@ -75,60 +80,109 @@ public class CalculateScore {
 
         // Iterate again through the combinations
         for (Dice d : combinations) {
+            // Init temp score int
             int tempScore = 0;
+
+            // Set any dice used to false
             boolean anyDiceUsed = false;
+
+            // Run through each die in the dice group
             for (Die die : d.getDice()) {
+                // Check if the die is used and that no dice has been used from the group
                 if (usedDice.getDie(die) && !anyDiceUsed)
                     anyDiceUsed = true;
             }
 
+            // Check if any dice has been used
             if(!anyDiceUsed) {
+                // Run through each of the die
                 for (Die die : d.getDice()) {
+                    // Add the die value to the temp score
                     tempScore += die.getDieValue();
+                    // Set the current die as used
                     usedDice.addDie(die);
                 }
-                //Log.d(TAG_CALCULATE_SCORE, "tempScore = " + String.valueOf(tempScore));
+
+                // Add the temporary score to the actual score
                 score += tempScore;
             }
         }
 
+        // Return the score
         return score;
     }
 
+    /**
+     * Calculate combinations of only one die
+     * I.E. If the bet is set as 6 and if there are
+     * any matching dice with the value 6
+     */
     private void calculateOnes() {
+        // Check if the bet is lower than 1 ("Low")
         if (bet < 1) {
+            // Run through each die in the group
             for (Die die : dice.getDice()) {
+                // If the die value is lower than 4, i.e. bet "low"
                 if (die.getDieValue() < 4) {
+                    // Create a new dice combo
                     Dice diceCombo = new Dice();
+                    // Add the die to the combo
                     diceCombo.addDie(die);
+
+                    // Add the combo to the list of combinations
                     combinations.add(diceCombo);
                 }
             }
         } else {
+            // Run through each die in the group
             for (Die die : dice.getDice()) {
+                // Check if the die value equals to that of the bet
                 if (die.getDieValue() == bet) {
+                    // Init a new dice combo
                     Dice diceCombo = new Dice();
+                    // Add the die to the combo
                     diceCombo.addDie(die);
+
+                    // Add the combo to the list of combinations
                     combinations.add(diceCombo);
                 }
             }
         }
     }
 
+    /**
+     * Calculate combinations of two dice
+     * I.E. If a bet is set as 6 and if there are
+     * any two matching dice that make up 6, (3+3),(4+2)
+     */
     private void calculateTwos() {
+        // Loop through dice group
         for (int i = 0; i < dice.getDice().size() - 1; i++) {
+            // Inner loop for the second die
             for (int x = i+1; x < dice.getDice().size(); x++) {
+                // Check if the two current dice match the value of the bet
                 if (dice.getDie(i).getDieValue() + dice.getDie(x).getDieValue() == bet) {
+                    // Init a new dice combo
                     Dice diceCombo = new Dice();
+                    // Add the two dice to the combo
                     diceCombo.addDie(dice.getDie(i));
                     diceCombo.addDie(dice.getDie(x));
+
+                    // Add the combo to the list of all possible combinations
                     combinations.add(diceCombo);
                 }
             }
         }
     }
 
+    /**
+     * Calculate combinations of three dice
+     * I.E. If a bet is set as 6 and if there are
+     * any three matching dice that total to 6
+     * (1+3+2), (2+2+2), (1+1+4)
+     */
     private void calculateThrees() {
+        // Functions the same was as calculating two dice, only adding extra inner loop
         for (int i = 0; i < dice.getDice().size() - 2; i++) {
             for (int x = i+1; x < dice.getDice().size() - 1; x++) {
                 for (int y = x+1; y < dice.getDice().size(); y++) {
@@ -145,7 +199,11 @@ public class CalculateScore {
         }
     }
 
+    /**
+     * Calculate combinations of four dice
+     */
     private void calculateFours() {
+        // See function "calculateTwos()"
         for (int i = 0; i < dice.getDice().size() - 3; i++) {
             for (int x = i+1; x < dice.getDice().size() - 2; x++) {
                 for (int y = x+1; y < dice.getDice().size() -1; y++) {
@@ -165,7 +223,11 @@ public class CalculateScore {
         }
     }
 
+    /**
+     * Calculate combination of five dice
+     */
     private void calculateFives() {
+        // See function "calculateTwos"
         for (int i = 0; i < dice.getDice().size() - 4; i++) {
             for (int x = i+1; x < dice.getDice().size() - 3; x++) {
                 for (int y = x+1; y < dice.getDice().size() - 2; y++) {
@@ -189,15 +251,27 @@ public class CalculateScore {
         }
     }
 
+    /**
+     * Calculate combination of six dice
+     * Adds the score together of every die in the group
+     * and matches it to the bet value
+     */
     private void calculateSixes() {
+        // Init a temp score
         int tempScore = 0;
+        // Init a dice combo
         Dice diceCombo = new Dice();
+        // Run through each die in the group
         for (Die die : dice.getDice()) {
+            // Add the die to the combo
             diceCombo.addDie(die);
+            // Add the die value to the temporary score
             tempScore =+ die.getDieValue();
         }
 
+        // Check if the die value of the six dice match the bet
         if (tempScore == bet) {
+            // Add the dice combination to the list of possible combinations
             combinations.add(diceCombo);
         }
     }

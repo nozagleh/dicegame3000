@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Dice {
 
     // Init array list of multiple die
-    ArrayList<Die> dice;
+    private ArrayList<Die> dice;
 
     /**
      * Constructor
@@ -60,59 +60,42 @@ public class Dice {
     }
 
     /**
-     * Set a die in a certain location in the list
-     * @param loc Location of insert
-     * @param die Die to be inserted
+     * Add die to the dice group
+     * @param die Die object
      */
-    public void setDie(Integer loc, Die die) {
-        this.dice.set(loc, die);
-    }
-
-    /**
-     * Remove die in list based on location
-     * @param loc Location of die in list
-     */
-    public void removeDie(Integer loc) {
-        this.dice.remove(loc);
-    }
-
-    /**
-     * Remove die in list based on a certain die
-     * @param die Die to be removed
-     */
-    public  void removeDie(Die die) {
-        this.dice.remove(die);
-    }
-
     public void addDie(Die die) {
         this.dice.add(die);
     }
 
+    /**
+     * Add a completely new die to the Dice group
+     */
     public void addDie() {
         Die die = new Die();
         this.dice.add(die);
     }
 
+    /**
+     * Fill the Dice group
+     */
     public void fill() {
+        // Clear the group, if any old dice are remaining
         this.dice.clear();
+        // Fill the group with six dice
         for (int i = 0; i < 6; i++) {
+            // Add a new die
             addDie();
         }
     }
 
+    /**
+     * Set random value to each die in the group
+     */
     public void randomizeDice() {
+        // Run through all the dice in the group
         for (Die die : this.dice) {
+            // Set a random value for the current die
            die.setRandomValue();
         }
-    }
-
-    public ArrayList<Integer> getDieValues() {
-        ArrayList<Integer> values = new ArrayList<>();
-
-        for (Die die: this.dice) {
-            values.add(die.getDieValue());
-        }
-
-        return values;
     }
 }

@@ -8,6 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Init the buttons on the main screen
     Button btnPlay;
     Button btnScore;
 
@@ -47,10 +48,18 @@ public class MainActivity extends AppCompatActivity {
         initActivity(Game.class);
     }
 
+    /**
+     * Start the highscore activity
+     * @param view
+     */
     public void showHighScore(View view) {
         initActivity(Highscore.class);
     }
 
+    /**
+     * Multipurpose class for starting a new activity
+     * @param c Class, activity to start
+     */
     public void initActivity(Class c) {
         // Create a new intent for the game activity
         Intent intent = new Intent(this, c);

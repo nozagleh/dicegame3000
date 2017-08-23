@@ -498,24 +498,6 @@ public class Game extends FragmentActivity
     }
 
     /**
-     * Get the round scores
-     * @return array list of integers
-     */
-    @Override
-    public ArrayList<Integer> getScores() {
-        // Init a new array list of ints
-        ArrayList<Integer> scores = new ArrayList<>();
-
-        // Add scores to the list
-        scores.add(game.getRollNr());
-        scores.add(game.getRoundNr());
-        scores.add(game.getScore());
-
-        // Return the list
-        return scores;
-    }
-
-    /**
      * Get the game variable, used to pass to fragments that might need
      * to do extensive work with it
      * @return Game instance
