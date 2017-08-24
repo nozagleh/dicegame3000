@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity {
     // Init the buttons on the main screen
     Button btnPlay;
     Button btnScore;
+    Button btnSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,13 +21,14 @@ public class MainActivity extends AppCompatActivity {
         // Init elements in the activity
         btnPlay = (Button)findViewById(R.id.btnPlay);
         btnScore = (Button)findViewById(R.id.btnScore);
+        btnSettings = (Button)findViewById(R.id.btnSettings);
 
         // Button play on click listener
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Start game
-                startGame(v);
+                initActivity(Game.class);
             }
         });
 
@@ -35,25 +37,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Show highscore
-                showHighScore(v);
+                initActivity(Highscore.class);
             }
         });
-    }
 
-    /**
-     * Start the main game activity.
-     * @param view
-     */
-    public void startGame(View view) {
-        initActivity(Game.class);
-    }
-
-    /**
-     * Start the highscore activity
-     * @param view
-     */
-    public void showHighScore(View view) {
-        initActivity(Highscore.class);
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initActivity(SettingsActivity.class);
+            }
+        });
     }
 
     /**

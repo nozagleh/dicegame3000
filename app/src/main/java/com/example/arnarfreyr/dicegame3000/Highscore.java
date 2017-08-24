@@ -22,7 +22,8 @@ public class Highscore extends AppCompatActivity {
 
         // Get the action bar and set the back button
         ActionBar aB = getSupportActionBar();
-        aB.setDisplayHomeAsUpEnabled(true);
+        if (aB != null)
+            aB.setDisplayHomeAsUpEnabled(true);
 
         // Init the recycler view
         mRecyclerView = (RecyclerView) findViewById(R.id.scoreView);

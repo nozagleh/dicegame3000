@@ -175,6 +175,10 @@ public class Game extends FragmentActivity
             // Set the game dice group
             game.setDice(dice);
 
+            int currentBet = sharedPreferences.getInt(getString(R.string.preference_current_bet), -1);
+            if (currentBet != -1)
+                game.setBetType(currentBet);
+
             // Get done bets from SP
             String tempBets = sharedPreferences.getString(getString(R.string.preference_done_bets), "-1");
             // Check if the bets string is empty
@@ -199,6 +203,7 @@ public class Game extends FragmentActivity
                     // Update the rolls and images in the play fragment
                     playFrag.displayRoll(game.getRollNr());
                     playFrag.updateImages(game.getDice());
+                    playFrag.updateBetText(String.format(getString(R.string.txt_bet_chosen), game.getBetType()));
                 }
 
                 // Update the scores text if the done bets are not empty
@@ -299,7 +304,10 @@ public class Game extends FragmentActivity
             Toast noBackToast = Toast.makeText(this, getString(R.string.txt_game_finished), Toast.LENGTH_SHORT);
             // Show the toast
             noBackToast.show();
-        }else {
+        } else if( overlayFrag != null && overlayFrag.isVisible() ) {
+            // Close the overlay fragment if the user clicked the back button
+            onClickClose();
+        } else {
             // Call super on back pressed
             super.onBackPressed();
         }
@@ -440,7 +448,6 @@ public class Game extends FragmentActivity
             getSupportFragmentManager().beginTransaction()
                     .setTransition(R.anim.frag_slide_in)
                     .add(R.id.overlay_fragment, overlayFrag, TAG_POPUP_FRAG)
-                    .addToBackStack(null)
                     .commit();
             // Set overlay fragment score dialog boolean to true
             scoreDiagOn = true;
@@ -471,7 +478,7 @@ public class Game extends FragmentActivity
         // Init an empty Integer
         Integer bet;
 
-        // Ceck if the bet available and chosen equal to "Low", then set it as 0
+        // Check if the bet available and chosen equal to "Low", then set it as 0
         if (betsAvailable[betNr].equals("Low"))
             bet = 0;
         else
@@ -496,6 +503,16 @@ public class Game extends FragmentActivity
         if (playFrag != null)
             playFrag.updateBetText(betText);
 
+        saveBetToSP();
+
+    }
+
+    public void saveBetToSP() {
+        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt(getString(R.string.preference_current_bet),game.getBetType());
+        editor.apply();
     }
 
     /**
@@ -634,7 +651,6 @@ public class Game extends FragmentActivity
             // Remove the overlay fragment and add it to the backstack
             getSupportFragmentManager().beginTransaction()
                     .remove(overlayFrag)
-                    .addToBackStack(TAG_POPUP_FRAG)
                     .commit();
             // Roll the dice
             game.roll();
