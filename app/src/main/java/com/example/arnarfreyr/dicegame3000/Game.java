@@ -92,9 +92,6 @@ public class Game extends FragmentActivity
     public void onResume() {
         super.onResume();
 
-        // Start the game
-        game.startGame();
-
         // Get the shared preferences
         SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
 
