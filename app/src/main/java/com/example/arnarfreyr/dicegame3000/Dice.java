@@ -5,7 +5,8 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Class for a group of dice
+ * Class for a group of dice.
+ * Groups many die together in a group of dice.
  *
  * Created by arnarfreyr on 7.8.2017.
  */

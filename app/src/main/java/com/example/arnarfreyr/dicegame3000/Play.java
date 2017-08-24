@@ -19,6 +19,10 @@ import java.util.ArrayList;
 
 
 /**
+ * Play fragment.
+ *
+ * Shows the playing interface itself
+ *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link FragmentListener} interface
@@ -218,7 +222,7 @@ public class Play extends Fragment implements View.OnClickListener {
                 found = true;
                 break;
         }
-
+        Log.d("Play", lockDice.toString());
         // Check if the clicked element has been found and if it is a die, is not locked
         if (!found && !lockDice) {
             // Get the image number from the clicked die
@@ -294,22 +298,8 @@ public class Play extends Fragment implements View.OnClickListener {
      * @param score Integer score, the score to show
      */
     public void displayRoundScore(Integer score) {
-        // Load an animation for the change
-        Animation scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text);
-        // Reset the animation
-        scoreAnim.reset();
-
-        // Clear the animation on the text view
-        txtScore.clearAnimation();
-        // Start the animation
-        txtScore.startAnimation(scoreAnim);
-
-        // Set the text
-        txtScore.setText(String.valueOf(score));
-
-        // Start the second animation and start it
-        scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text_in);
-        txtScore.startAnimation(scoreAnim);
+        // Call the animation text change function
+        initTextAnimation(txtScore, String.valueOf(score));
     }
 
     /**
@@ -317,7 +307,8 @@ public class Play extends Fragment implements View.OnClickListener {
      * @param rollNr Integer roll number
      */
     public void displayRoll(Integer rollNr) {
-        txtRollNr.setText(String.valueOf(rollNr));
+       //txtRollNr.setText(String.valueOf(rollNr));
+        initTextAnimation(txtRollNr, String.valueOf(rollNr));
     }
 
     /**
@@ -325,7 +316,32 @@ public class Play extends Fragment implements View.OnClickListener {
      * @param roundNr Integer round number
      */
     public void displayRound(Integer roundNr) {
-        txtRoundNr.setText(String.valueOf(roundNr));
+        //txtRoundNr.setText(String.valueOf(roundNr));
+        initTextAnimation(txtRoundNr, String.valueOf(roundNr));
+    }
+
+    /**
+     * Init text change with an animation
+     * @param txtField TextView, the text field to update
+     * @param text String, the text that will be inserted into the text field
+     */
+    public void initTextAnimation(TextView txtField, String text) {
+        // Load an animation for the change
+        Animation scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text);
+        // Reset the animation
+        scoreAnim.reset();
+
+        // Clear the animation on the text view
+        txtField.clearAnimation();
+        // Start the animation
+        txtField.startAnimation(scoreAnim);
+
+        // Set the text
+        txtField.setText(String.valueOf(text));
+
+        // Start the second animation and start it
+        scoreAnim = AnimationUtils.loadAnimation(getContext(), R.anim.score_text_in);
+        txtField.startAnimation(scoreAnim);
     }
 
     /**

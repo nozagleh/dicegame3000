@@ -14,6 +14,10 @@ import java.util.ArrayList;
 
 
 /**
+ * OverlayRound fragment.
+ *
+ * Shows informative info to the user after each round.
+ *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link OverlayFragmentListener} interface

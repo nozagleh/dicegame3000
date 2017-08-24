@@ -56,14 +56,8 @@ public class CalculateScore {
             for (Die die : d.getDice()) {
                 // Check if the die has not been used before
                 if (!usedDice.getDie(die)) {
-                    // Check if the bet is greater or equal to 1
-                    if (bet >= 1) {
-                        // Add the value of the die to the score
-                        score += die.getDieValue();
-                    }else {
-                        // Otherwise add one point to the score
-                        score++;
-                    }
+                    // Add the sum of the current die to the score
+                    score += die.getDieValue();
 
                     // Add the die to the used dice
                     usedDice.addDie(die);

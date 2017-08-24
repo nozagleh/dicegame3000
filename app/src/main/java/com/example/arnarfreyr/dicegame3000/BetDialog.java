@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
+ * Bet Dialog. A dialog that shows the bets that are
+ * available to the user in-game.
+ *
  * Created by arnar on 2017-08-10.
  */
 

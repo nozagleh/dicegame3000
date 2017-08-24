@@ -5,6 +5,8 @@ import android.util.Log;
 /**
  * Class for each die present in the game.
  *
+ * Hold the die, value, if the die is locked or selected.
+ *
  * Created by arnarfreyr on 7.8.2017.
  */
 

@@ -1,6 +1,12 @@
 package com.example.arnarfreyr.dicegame3000;
 
 /**
+ * UserData class.
+ *
+ * Stores the data of users and their scores.
+ * Used to insert data into the database as well as fetching
+ * database data in a structured way.
+ *
  * Created by arnarfreyr on 19.8.2017.
  */
 

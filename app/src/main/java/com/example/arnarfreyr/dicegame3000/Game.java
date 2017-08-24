@@ -37,6 +37,9 @@ public class Game extends FragmentActivity
     Boolean scoreDiagOn;
     Boolean sharedPrefOn;
 
+    // Init an SQL manager
+    SQLManager sql;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -374,6 +377,7 @@ public class Game extends FragmentActivity
     @Override
     public void onDieChosen(Integer dieNr) {
         // Checck if the game has been started, if not, return
+        Log.d("Game", game.getIsStarted().toString());
         if (!game.getIsStarted())
             return;
         // Set the die chosen
@@ -560,7 +564,7 @@ public class Game extends FragmentActivity
         UserData user = new UserData(playerName, game.getFinalScore());
 
         // Init a new sql manager
-        SQLManager sql = new SQLManager(this);
+        sql = new SQLManager(this);
 
         // Return a call to the SQL class with a boolean return indicator
         return sql.insertUser(user);
@@ -578,6 +582,8 @@ public class Game extends FragmentActivity
         // Clear the shared preferences and apply the changes
         editor.clear();
         editor.apply();
+
+        sql.closeConnection();
 
         // End the current activity
         this.finish();
