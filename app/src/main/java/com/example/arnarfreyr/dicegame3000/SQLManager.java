@@ -121,6 +121,18 @@ public class SQLManager {
 
         return userData;
     }
+
+    /**
+     * Close the sql connection
+     */
+    public void closeConnection() {
+        try {
+            if (db.isOpen())
+                db.close();
+        } catch(SQLException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
 }
 
 /**
