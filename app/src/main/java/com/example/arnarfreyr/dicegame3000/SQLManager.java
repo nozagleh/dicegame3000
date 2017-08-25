@@ -122,6 +122,16 @@ public class SQLManager {
         return userData;
     }
 
+    public Boolean clearDB() {
+        try {
+            handler.recreateDB(db);
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Close the sql connection
      */
@@ -183,6 +193,11 @@ class SQLHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(SQL_DROP_HIGHSCORES);
+        onCreate(db);
+    }
+
+    public void recreateDB(SQLiteDatabase db) {
         db.execSQL(SQL_DROP_HIGHSCORES);
         onCreate(db);
     }

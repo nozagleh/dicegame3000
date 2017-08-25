@@ -1,10 +1,18 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Switch;
 
 public class SettingsActivity extends AppCompatActivity {
+
+    Switch dbDelete;
+
+    SQLManager sqlManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +23,24 @@ public class SettingsActivity extends AppCompatActivity {
         ActionBar aB = getSupportActionBar();
         if (aB != null)
             aB.setDisplayHomeAsUpEnabled(true);
+
+        sqlManager = new SQLManager(this);
+
+        final SharedPreferences sp = this.getPreferences(MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sp.edit();
+
+        dbDelete = (Switch) findViewById(R.id.swDB);
+        dbDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dbDelete.setEnabled(true);
+                //sqlManager.clearDB();
+
+                editor.clear();
+                editor.apply();
+                dbDelete.setEnabled(false);
+            }
+        });
     }
 
     /**

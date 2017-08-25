@@ -54,7 +54,7 @@
     <string name="preferences_text_hidden">TEXT_HIDDEN</string>
     <string name="preference_current_bet">CURRENT_BET</string>
     <!-- Settings texts -->
-    <string name="settings_purge_db">Delete all stored data in the database!</string>
+    <string name="settings_purge_db">Delete DB data</string>
     <string name="settings_purge_sp">Clear current on-going game</string>
 
     <!-- TODO: Remove or change this placeholder text -->
