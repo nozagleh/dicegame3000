@@ -3,17 +3,12 @@ package com.example.arnarfreyr.dicegame3000;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Game extends FragmentActivity
@@ -310,10 +305,9 @@ public class Game extends FragmentActivity
     public void onBackPressed() {
         // Check if the score fragment is visible and not null
         if ( scoreFrag != null && scoreFrag.isVisible() ) {
-            // Create a toast that sends a notice to the user that they need to enter the name
-            Toast noBackToast = Toast.makeText(this, getString(R.string.txt_game_finished), Toast.LENGTH_SHORT);
-            // Show the toast
-            noBackToast.show();
+            // Display a Snackbar message to the user
+            Snackbar sb = Snackbar.make(findViewById(R.id.coordinate_game), getString(R.string.txt_game_finished), Snackbar.LENGTH_SHORT);
+            sb.show();
         } else if( overlayFrag != null && overlayFrag.isVisible() ) {
             // Close the overlay fragment if the user clicked the back button
             onClickClose();
@@ -347,8 +341,8 @@ public class Game extends FragmentActivity
 
         // Check if the rolls have been reset, and the if the chosen bet is done
         if (game.isRollReset() && game.betAlreadyDone()) {
-            // Show the chosen bet toast error message
-            showBetToast();
+            // Show the chosen bet snackbar error message
+            showBetSnack();
             return;
         }
 
@@ -391,8 +385,7 @@ public class Game extends FragmentActivity
      */
     @Override
     public void onDieChosen(Integer dieNr) {
-        // Checck if the game has been started, if not, return
-        Log.d("Game", game.getIsStarted().toString());
+        // Check if the game has been started, if not, return
         if (!game.getIsStarted())
             return;
         // Set the die chosen
@@ -539,10 +532,10 @@ public class Game extends FragmentActivity
     }
 
     /**
-     * Show a toast if user tries to bet with
+     * Show a SnackBar if user tries to bet with
      * an already used bet.
      */
-    private void showBetToast() {
+    private void showBetSnack() {
         // Init a bet string
         String betText;
 
@@ -556,14 +549,10 @@ public class Game extends FragmentActivity
             betText = bet.toString();
         }
 
-        // Init a toast message and get a pre-defined dialog text, adding the bet text
+        // Init a message and get a pre-defined dialog text, adding the bet text
         String message = getString(R.string.dialog_bet_text, betText);
 
-        // Init the toast itself
-        Toast betToast = Toast.makeText(this, message ,Toast.LENGTH_SHORT);
-        //Show the toast
-        //betToast.show();
-
+        // Show a Snackbar with the message for the user
         Snackbar sb = Snackbar.make(findViewById(R.id.coordinate_game), message, Snackbar.LENGTH_SHORT);
         sb.show();
     }
