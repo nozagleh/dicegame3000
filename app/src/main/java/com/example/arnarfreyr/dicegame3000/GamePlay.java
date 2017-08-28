@@ -349,14 +349,17 @@ public class GamePlay {
 
     /**
      * Get the round score
-     * @return Integer round score
+     * @return Integer round score, -1 if empty
      */
     public Integer getRoundScore() {
         // Get the size of the round score array
         int scoreArrSize = this.roundsScore.size();
 
-        // Return the last item in the round score array
-        return this.roundsScore.get(scoreArrSize - 1);
+        if (scoreArrSize > 0) {
+            // Return the last item in the round score array
+            return this.roundsScore.get(scoreArrSize - 1);
+        }
+        return -1;
     }
 
     /**

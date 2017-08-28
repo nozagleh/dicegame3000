@@ -68,14 +68,14 @@ public class ScoreRecyclerViewAdapter extends RecyclerView.Adapter<ScoreRecycler
 
         // If the name is not empty for this position, set name instead of round
         if (this.mScores.get(position).getName() != null) {
-            nameOrRound = this.mScores.get(position).getName();
+            nameOrRound = String.valueOf(position + 1) + ". " + this.mScores.get(position).getName();
         }
 
         // Set the round/name text
         holder.txtRound.setText(nameOrRound);
 
         // Assemble a string with the score and set it to the text view
-        String score = String.valueOf(this.mScores.get(position).getScore());
+        String score = String.valueOf(context.getString(R.string.txt_pts, this.mScores.get(position).getScore().toString()));
         holder.txtScore.setText(score);
     }
 

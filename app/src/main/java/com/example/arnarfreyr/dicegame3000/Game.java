@@ -203,7 +203,17 @@ public class Game extends FragmentActivity
                     // Update the rolls and images in the play fragment
                     playFrag.displayRoll(game.getRollNr());
                     playFrag.updateImages(game.getDice());
-                    playFrag.updateBetText(String.format(getString(R.string.txt_bet_chosen), game.getBetType()));
+
+                    // Check if the bet is suppose to say "Low"
+                    String bet = game.getBetType().toString();
+                    if (game.getBetType() == 0)
+                        bet = "Low";
+
+                    // Update the bet text
+                    playFrag.updateBetText(String.format(getString(R.string.txt_bet_chosen_string), bet));
+
+                    // Show scores
+                    showScores();
                 }
 
                 // Update the scores text if the done bets are not empty
@@ -400,6 +410,9 @@ public class Game extends FragmentActivity
     public void startGame() {
         // Start the game
         game.startGame();
+
+        if (playFrag != null)
+            showScores();
     }
 
     /**
@@ -549,7 +562,10 @@ public class Game extends FragmentActivity
         // Init the toast itself
         Toast betToast = Toast.makeText(this, message ,Toast.LENGTH_SHORT);
         //Show the toast
-        betToast.show();
+        //betToast.show();
+
+        Snackbar sb = Snackbar.make(findViewById(R.id.coordinate_game), message, Snackbar.LENGTH_SHORT);
+        sb.show();
     }
 
     /**
@@ -557,13 +573,14 @@ public class Game extends FragmentActivity
      */
     private void showScores() {
         // Check if the play fragment exists
-        if (playFrag != null) {
+        if (playFrag != null && !game.hasGameEnded()) {
             // Get the round score
             Integer score = game.getRoundScore();
 
             // Call the play frag and update the scores
             playFrag.displayRound(game.getRoundNr()+1);
-            playFrag.displayRoundScore(score);
+            if (score != -1)
+                playFrag.displayRoundScore(score);
         }
     }
 
