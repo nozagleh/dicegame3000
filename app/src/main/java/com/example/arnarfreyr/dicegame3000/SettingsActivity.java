@@ -1,20 +1,28 @@
 package com.example.arnarfreyr.dicegame3000;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    protected final String TAG_SETTINGS = "SettingsActivity";
+
     Switch dbDelete;
+    Switch spDelete;
 
     SQLManager sqlManager;
 
-    @Override
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
@@ -24,21 +32,49 @@ public class SettingsActivity extends AppCompatActivity {
         if (aB != null)
             aB.setDisplayHomeAsUpEnabled(true);
 
-        sqlManager = new SQLManager(this);
+        sqlManager = new SQLManager(getApplicationContext());
 
-        final SharedPreferences sp = this.getPreferences(MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sp.edit();
+        sp = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+        editor = sp.edit();
 
         dbDelete = (Switch) findViewById(R.id.swDB);
-        dbDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dbDelete.setEnabled(true);
-                //sqlManager.clearDB();
+        spDelete = (Switch) findViewById(R.id.swSharedPref);
 
-                editor.clear();
-                editor.apply();
-                dbDelete.setEnabled(false);
+        dbDelete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int message;
+                if (isChecked) {
+                    if (sqlManager.clearDB())
+                        message = R.string.settings_purge_db;
+                    else
+                        message = R.string.settings_purge_db_fail;
+
+                    Snackbar dbDeleteSnack = Snackbar.make(findViewById(R.id.claySettings),
+                            message,
+                            Snackbar.LENGTH_SHORT);
+                    dbDeleteSnack.show();
+
+                    dbDelete.setEnabled(false);
+
+                }
+            }
+        });
+
+        spDelete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    editor.clear();
+                    editor.apply();
+
+                    Snackbar dbDeleteSnack = Snackbar.make(findViewById(R.id.claySettings),
+                            R.string.settings_purge_sp,
+                            Snackbar.LENGTH_SHORT);
+                    dbDeleteSnack.show();
+
+                    spDelete.setEnabled(false);
+                }
             }
         });
     }

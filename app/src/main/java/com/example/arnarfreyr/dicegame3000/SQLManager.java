@@ -124,6 +124,7 @@ public class SQLManager {
 
     public Boolean clearDB() {
         try {
+            setWrite();
             handler.recreateDB(db);
         } catch (SQLException e) {
             Log.e(TAG, e.getMessage());

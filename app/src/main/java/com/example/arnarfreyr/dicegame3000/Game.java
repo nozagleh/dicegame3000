@@ -66,7 +66,7 @@ public class Game extends FragmentActivity
 
 
             // Get the shared preferences
-            SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
             // Check if the preferences should be used
             if (!sharedPreferences.getBoolean(getString(R.string.preference_set), false)) {
                 // If not, fill the dice group
@@ -93,7 +93,7 @@ public class Game extends FragmentActivity
         super.onResume();
 
         // Get the shared preferences
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
 
         // Check if the shared preferences should be used
         if (sharedPreferences.getBoolean(getString(R.string.preference_set), false)) {
@@ -221,7 +221,7 @@ public class Game extends FragmentActivity
         super.onPause();
 
         // Open up a shared preferences
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Put boolean if the game has actually ended
@@ -508,7 +508,7 @@ public class Game extends FragmentActivity
     }
 
     public void saveBetToSP() {
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putInt(getString(R.string.preference_current_bet),game.getBetType());
@@ -590,7 +590,7 @@ public class Game extends FragmentActivity
     @Override
     public void closeActivity() {
         // Call the shared preferences and editor
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Clear the shared preferences and apply the changes
@@ -686,7 +686,7 @@ public class Game extends FragmentActivity
     @Override
     public Boolean getTextHidden() {
         // Get preference from shared preferences
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
 
         // Return bool if hidden
         return sharedPreferences.getBoolean(getString(R.string.preferences_text_hidden), false);
@@ -699,7 +699,7 @@ public class Game extends FragmentActivity
     @Override
     public void setTextHidden(Boolean hidden) {
         // Get the shared preferences and create an editor
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Add boolean if hidden and apply
