@@ -3,7 +3,6 @@ package com.example.arnarfreyr.dicegame3000;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,10 @@ import java.util.ArrayList;
 
 
 /**
+ * OverlayRound fragment.
+ *
+ * Shows informative info to the user after each round.
+ *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link OverlayFragmentListener} interface
@@ -61,19 +64,25 @@ public class OverlayRound extends Fragment {
     public void onResume() {
         super.onResume();
 
+        // Check if the fragment listener exists
         if (mListener != null) {
+            // Get variables from the parent activity
             variables = mListener.getOverlayVariables();
         }
 
+        // Check if the variables are not null
         if (variables != null) {
+            // Set multiple texts
             txtRound.setText(String.format(getResources().getString(R.string.txt_rounds_number), variables.get(0)));
             txtScore.setText(String.format(getResources().getString(R.string.txt_pts), variables.get(1)));
             txtTotalScore.setText(String.format(getResources().getString(R.string.txt_total_score), variables.get(2)));
         }
 
+        // Set on click listener for the next button
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Call on button pressed function
                 onButtonPressed();
             }
         });
@@ -87,17 +96,25 @@ public class OverlayRound extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_overlay_round, container, false);
 
+        // Init the text views in the fragment
         txtRound = (TextView) view.findViewById(R.id.wScoreTitle);
         txtScore = (TextView) view.findViewById(R.id.wScore);
         txtTotalScore = (TextView) view.findViewById(R.id.wTotalScoreLbl);
-
+        // Init the next button in the fragment
         btnNext = (Button) view.findViewById(R.id.wBtnNext);
 
+        // Return the view
         return view;
     }
 
+    /**
+     * On button press activity.
+     * Used for the "Next" button in the fragment
+     */
     public void onButtonPressed() {
+        // Check if the fragment listener is connected
         if (mListener != null) {
+            // Call the parent to run its closing function
             mListener.onClickClose();
         }
     }
@@ -105,6 +122,7 @@ public class OverlayRound extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        // Check for the fragment listener
         if (context instanceof OverlayFragmentListener) {
             mListener = (OverlayFragmentListener) context;
         } else {
@@ -116,6 +134,7 @@ public class OverlayRound extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        // Set fragment listener to null on detach
         mListener = null;
     }
 }

@@ -1,9 +1,9 @@
 package com.example.arnarfreyr.dicegame3000;
 
-import android.util.Log;
-
 /**
  * Class for each die present in the game.
+ *
+ * Hold the die, value, if the die is locked or selected.
  *
  * Created by arnarfreyr on 7.8.2017.
  */
@@ -56,17 +56,29 @@ public class Die {
         this.chosen = chosen;
     }
 
+    /**
+     * Toggle true/false if the die is chosen or not
+     */
     public void toggleChosen() {
+        // Check if chosen
         if (this.chosen) {
+            // Then set to false
             this.chosen = false;
 
+            // Return
             return;
         }
+        // Otherwise set chosen to true
         this.chosen = true;
     }
 
+    /**
+     * Set the die value to random
+     */
     public void setRandomValue() {
+        // Check first if the dice is not locked (chosen)
         if(!getIfChosen()) {
+            // Change the die value to random between 1-6
             this.dieValue = (int)(Math.random() * 6 + 1);
         }
     }

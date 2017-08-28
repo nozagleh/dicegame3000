@@ -20,44 +20,76 @@ import java.util.Date;
  */
 
 public class SQLManager {
-
+    // Set class tag for error logging
     private static final String TAG = "SQLManager";
 
+    // Init SQL classes
     private SQLHandler handler = null;
     private SQLiteDatabase db = null;
 
+    /**
+     * Constructor, takes in the app context
+     * @param context Context of the application
+     */
     public SQLManager(Context context) {
         handler = new SQLHandler(context);
     }
 
+    /**
+     * Set the database into write mode
+     */
     private void setWrite() {
         db = handler.getWritableDatabase();
     }
 
+    /**
+     * Set the database into read mode
+     */
     private void setRead() {
         db = handler.getReadableDatabase();
     }
 
+    /**
+     * Insert a user into the database
+     *
+     * @param user UserData, user object
+     * @return Boolean, true|false on success
+     */
     public Boolean insertUser(UserData user) {
+        // Set the database into write mode
         setWrite();
 
+        // Create a new content values object
         ContentValues values = new ContentValues();
 
+        // Put the user values into the content values
         values.put(SQLConstants.Entries.HIGHSCORES_NAME, user.getName());
         values.put(SQLConstants.Entries.HIGHSCORE_SCORE, user.getScore());
 
+        // Init a new datetime
         Date date = new Date();
+        // Put the date in content values
         values.put(SQLConstants.Entries.HIGHSCORE_DATETIME, date.toString());
+
         try {
+            // Try an insert of values
             db.insert(SQLConstants.Entries.TABLE_NAME, null, values);
         } catch (SQLException e) {
+            // Log error exception on fail inser
             Log.e(TAG, e.getMessage(), e);
             return false;
         }
         return true;
     }
 
+    /**
+     * Get the highscores from the database. The highscore returned
+     * is in the format of UserData object list
+     *
+     * @return ArrayList of UserData objects
+     */
     public ArrayList<UserData> getHighScoreList() {
+
         setRead();
 
         String[] columns = {
@@ -88,6 +120,29 @@ public class SQLManager {
         queryCursor.close();
 
         return userData;
+    }
+
+    public Boolean clearDB() {
+        try {
+            setWrite();
+            handler.recreateDB(db);
+        } catch (SQLException e) {
+            Log.e(TAG, e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Close the sql connection
+     */
+    public void closeConnection() {
+        try {
+            if (db.isOpen())
+                db.close();
+        } catch(SQLException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 }
 
@@ -139,6 +194,11 @@ class SQLHandler extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(SQL_DROP_HIGHSCORES);
+        onCreate(db);
+    }
+
+    public void recreateDB(SQLiteDatabase db) {
         db.execSQL(SQL_DROP_HIGHSCORES);
         onCreate(db);
     }

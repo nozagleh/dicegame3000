@@ -3,17 +3,12 @@ package com.example.arnarfreyr.dicegame3000;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Game extends FragmentActivity
@@ -36,6 +31,9 @@ public class Game extends FragmentActivity
     Boolean setToLast;
     Boolean scoreDiagOn;
     Boolean sharedPrefOn;
+
+    // Init an SQL manager
+    SQLManager sql;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +61,7 @@ public class Game extends FragmentActivity
 
 
             // Get the shared preferences
-            SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
             // Check if the preferences should be used
             if (!sharedPreferences.getBoolean(getString(R.string.preference_set), false)) {
                 // If not, fill the dice group
@@ -89,11 +87,8 @@ public class Game extends FragmentActivity
     public void onResume() {
         super.onResume();
 
-        // Start the game
-        game.startGame();
-
         // Get the shared preferences
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
 
         // Check if the shared preferences should be used
         if (sharedPreferences.getBoolean(getString(R.string.preference_set), false)) {
@@ -175,6 +170,10 @@ public class Game extends FragmentActivity
             // Set the game dice group
             game.setDice(dice);
 
+            int currentBet = sharedPreferences.getInt(getString(R.string.preference_current_bet), -1);
+            if (currentBet != -1)
+                game.setBetType(currentBet);
+
             // Get done bets from SP
             String tempBets = sharedPreferences.getString(getString(R.string.preference_done_bets), "-1");
             // Check if the bets string is empty
@@ -199,6 +198,17 @@ public class Game extends FragmentActivity
                     // Update the rolls and images in the play fragment
                     playFrag.displayRoll(game.getRollNr());
                     playFrag.updateImages(game.getDice());
+
+                    // Check if the bet is suppose to say "Low"
+                    String bet = game.getBetType().toString();
+                    if (game.getBetType() == 0)
+                        bet = "Low";
+
+                    // Update the bet text
+                    playFrag.updateBetText(String.format(getString(R.string.txt_bet_chosen_string), bet));
+
+                    // Show scores
+                    showScores();
                 }
 
                 // Update the scores text if the done bets are not empty
@@ -216,7 +226,7 @@ public class Game extends FragmentActivity
         super.onPause();
 
         // Open up a shared preferences
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Put boolean if the game has actually ended
@@ -295,11 +305,13 @@ public class Game extends FragmentActivity
     public void onBackPressed() {
         // Check if the score fragment is visible and not null
         if ( scoreFrag != null && scoreFrag.isVisible() ) {
-            // Create a toast that sends a notice to the user that they need to enter the name
-            Toast noBackToast = Toast.makeText(this, getString(R.string.txt_game_finished), Toast.LENGTH_SHORT);
-            // Show the toast
-            noBackToast.show();
-        }else {
+            // Display a Snackbar message to the user
+            Snackbar sb = Snackbar.make(findViewById(R.id.coordinate_game), getString(R.string.txt_game_finished), Snackbar.LENGTH_SHORT);
+            sb.show();
+        } else if( overlayFrag != null && overlayFrag.isVisible() ) {
+            // Close the overlay fragment if the user clicked the back button
+            onClickClose();
+        } else {
             // Call super on back pressed
             super.onBackPressed();
         }
@@ -329,8 +341,8 @@ public class Game extends FragmentActivity
 
         // Check if the rolls have been reset, and the if the chosen bet is done
         if (game.isRollReset() && game.betAlreadyDone()) {
-            // Show the chosen bet toast error message
-            showBetToast();
+            // Show the chosen bet snackbar error message
+            showBetSnack();
             return;
         }
 
@@ -373,7 +385,7 @@ public class Game extends FragmentActivity
      */
     @Override
     public void onDieChosen(Integer dieNr) {
-        // Checck if the game has been started, if not, return
+        // Check if the game has been started, if not, return
         if (!game.getIsStarted())
             return;
         // Set the die chosen
@@ -391,6 +403,9 @@ public class Game extends FragmentActivity
     public void startGame() {
         // Start the game
         game.startGame();
+
+        if (playFrag != null)
+            showScores();
     }
 
     /**
@@ -439,7 +454,6 @@ public class Game extends FragmentActivity
             getSupportFragmentManager().beginTransaction()
                     .setTransition(R.anim.frag_slide_in)
                     .add(R.id.overlay_fragment, overlayFrag, TAG_POPUP_FRAG)
-                    .addToBackStack(null)
                     .commit();
             // Set overlay fragment score dialog boolean to true
             scoreDiagOn = true;
@@ -470,7 +484,7 @@ public class Game extends FragmentActivity
         // Init an empty Integer
         Integer bet;
 
-        // Ceck if the bet available and chosen equal to "Low", then set it as 0
+        // Check if the bet available and chosen equal to "Low", then set it as 0
         if (betsAvailable[betNr].equals("Low"))
             bet = 0;
         else
@@ -495,24 +509,16 @@ public class Game extends FragmentActivity
         if (playFrag != null)
             playFrag.updateBetText(betText);
 
+        saveBetToSP();
+
     }
 
-    /**
-     * Get the round scores
-     * @return array list of integers
-     */
-    @Override
-    public ArrayList<Integer> getScores() {
-        // Init a new array list of ints
-        ArrayList<Integer> scores = new ArrayList<>();
+    public void saveBetToSP() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        // Add scores to the list
-        scores.add(game.getRollNr());
-        scores.add(game.getRoundNr());
-        scores.add(game.getScore());
-
-        // Return the list
-        return scores;
+        editor.putInt(getString(R.string.preference_current_bet),game.getBetType());
+        editor.apply();
     }
 
     /**
@@ -526,10 +532,10 @@ public class Game extends FragmentActivity
     }
 
     /**
-     * Show a toast if user tries to bet with
+     * Show a SnackBar if user tries to bet with
      * an already used bet.
      */
-    private void showBetToast() {
+    private void showBetSnack() {
         // Init a bet string
         String betText;
 
@@ -543,13 +549,12 @@ public class Game extends FragmentActivity
             betText = bet.toString();
         }
 
-        // Init a toast message and get a pre-defined dialog text, adding the bet text
+        // Init a message and get a pre-defined dialog text, adding the bet text
         String message = getString(R.string.dialog_bet_text, betText);
 
-        // Init the toast itself
-        Toast betToast = Toast.makeText(this, message ,Toast.LENGTH_SHORT);
-        //Show the toast
-        betToast.show();
+        // Show a Snackbar with the message for the user
+        Snackbar sb = Snackbar.make(findViewById(R.id.coordinate_game), message, Snackbar.LENGTH_SHORT);
+        sb.show();
     }
 
     /**
@@ -557,13 +562,14 @@ public class Game extends FragmentActivity
      */
     private void showScores() {
         // Check if the play fragment exists
-        if (playFrag != null) {
+        if (playFrag != null && !game.hasGameEnded()) {
             // Get the round score
             Integer score = game.getRoundScore();
 
             // Call the play frag and update the scores
             playFrag.displayRound(game.getRoundNr()+1);
-            playFrag.displayRoundScore(score);
+            if (score != -1)
+                playFrag.displayRoundScore(score);
         }
     }
 
@@ -578,7 +584,7 @@ public class Game extends FragmentActivity
         UserData user = new UserData(playerName, game.getFinalScore());
 
         // Init a new sql manager
-        SQLManager sql = new SQLManager(this);
+        sql = new SQLManager(this);
 
         // Return a call to the SQL class with a boolean return indicator
         return sql.insertUser(user);
@@ -590,12 +596,14 @@ public class Game extends FragmentActivity
     @Override
     public void closeActivity() {
         // Call the shared preferences and editor
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Clear the shared preferences and apply the changes
         editor.clear();
         editor.apply();
+
+        sql.closeConnection();
 
         // End the current activity
         this.finish();
@@ -649,7 +657,6 @@ public class Game extends FragmentActivity
             // Remove the overlay fragment and add it to the backstack
             getSupportFragmentManager().beginTransaction()
                     .remove(overlayFrag)
-                    .addToBackStack(TAG_POPUP_FRAG)
                     .commit();
             // Roll the dice
             game.roll();
@@ -685,7 +692,7 @@ public class Game extends FragmentActivity
     @Override
     public Boolean getTextHidden() {
         // Get preference from shared preferences
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
 
         // Return bool if hidden
         return sharedPreferences.getBoolean(getString(R.string.preferences_text_hidden), false);
@@ -698,7 +705,7 @@ public class Game extends FragmentActivity
     @Override
     public void setTextHidden(Boolean hidden) {
         // Get the shared preferences and create an editor
-        SharedPreferences sharedPreferences = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Add boolean if hidden and apply
