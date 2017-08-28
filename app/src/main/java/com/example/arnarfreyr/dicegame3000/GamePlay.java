@@ -1,11 +1,6 @@
 package com.example.arnarfreyr.dicegame3000;
 
-import android.util.Log;
-
-import java.net.Inet4Address;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class for the game play logic for the game

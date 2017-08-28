@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 
 /**
  * Bet Dialog. A dialog that shows the bets that are

@@ -1,7 +1,5 @@
 package com.example.arnarfreyr.dicegame3000;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 /**

@@ -1,7 +1,5 @@
 package com.example.arnarfreyr.dicegame3000;
 
-import android.util.Log;
-
 /**
  * Class for each die present in the game.
  *

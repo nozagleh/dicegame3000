@@ -1,7 +1,5 @@
 package com.example.arnarfreyr.dicegame3000;
 
-import java.util.ArrayList;
-
 /**
  * Fragment listener for the fragments in the Game activity
  *
