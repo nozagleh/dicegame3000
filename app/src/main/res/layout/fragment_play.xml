@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/frag_play"
-    tools:context="com.example.arnarfreyr.dicegame3000.Play">
+    tools:context="com.nozagleh.dicegame3000.Play">
 
     <!-- TODO: Update blank fragment layout -->
 

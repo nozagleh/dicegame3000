@@ -1,4 +1,4 @@
-package com.example.arnarfreyr.dicegame3000;
+package com.nozagleh.dicegame3000;
 
 import android.app.DialogFragment;
 import android.content.Context;

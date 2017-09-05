@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.arnarfreyr.dicegame3000.SettingsActivity">
+    tools:context="com.nozagleh.dicegame3000.SettingsActivity">
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,7 @@
         app:layout_constraintLeft_toLeftOf="@+id/swDB"
         app:layout_constraintRight_toLeftOf="@+id/swDB"
         app:layout_constraintTop_toTopOf="@+id/swDB"
-        tools:context="com.example.arnarfreyr.dicegame3000.SettingsActivity"
+        tools:context="com.nozagleh.dicegame3000.SettingsActivity"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"

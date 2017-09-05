@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "com.example.arnarfreyr.dicegame3000"
+        applicationId "com.nozagleh.dicegame3000"
         minSdkVersion 23
         targetSdkVersion 23
         versionCode 1

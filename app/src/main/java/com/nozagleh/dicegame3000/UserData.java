@@ -1,4 +1,4 @@
-package com.example.arnarfreyr.dicegame3000;
+package com.nozagleh.dicegame3000;
 
 /**
  * UserData class.

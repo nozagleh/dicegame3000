@@ -1,4 +1,4 @@
-package com.example.arnarfreyr.dicegame3000;
+package com.nozagleh.dicegame3000;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
