@@ -74,7 +74,7 @@
                     android:layout_marginStart="8dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="Name"
+                    android:text="@string/lbl_name"
                     app:layout_constraintBottom_toTopOf="@+id/btnSubmit"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />

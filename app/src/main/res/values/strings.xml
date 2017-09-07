@@ -2,6 +2,9 @@
     <!-- APP NAME -->
     <string name="app_name">6x Dice</string>
 
+    <!-- Defaults -->
+    <string name="default_desc_dice">Die</string>
+
     <!-- Activites -->
     <string name="label_activity_game">Game</string>
     <string name="label_activity_highscore">Highscore</string>

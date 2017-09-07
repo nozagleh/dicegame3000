@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="2"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -39,6 +40,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red1" />
 
                 <ImageView
@@ -47,6 +49,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red2" />
             </TableRow>
 
@@ -63,6 +66,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red3" />
 
                 <ImageView
@@ -71,6 +75,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red4" />
 
             </TableRow>
@@ -87,6 +92,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red5" />
 
                 <ImageView
@@ -95,6 +101,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red6" />
             </TableRow>
 
@@ -115,7 +122,7 @@
 
             <TextView
                 android:id="@+id/lblScores"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
                 android:layout_weight="1"
@@ -131,7 +138,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -255,7 +263,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
