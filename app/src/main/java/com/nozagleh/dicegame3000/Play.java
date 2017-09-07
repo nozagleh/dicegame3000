@@ -1,4 +1,4 @@
-package com.example.arnarfreyr.dicegame3000;
+package com.nozagleh.dicegame3000;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -92,6 +92,49 @@ public class Play extends Fragment implements View.OnClickListener {
         btnBet = (Button)view.findViewById(R.id.btnBet);
         btnBet.setOnClickListener(this);
 
+        // Initiate the dice images
+        initImages();
+
+        // Set the image resources
+        int count = 0;
+        for (ImageView iv: imgs) {
+            iv.setImageResource(imgFiles.get(count));
+            count++;
+        }
+
+        // Initiate the text and label views
+        initTextsAndLabels();
+
+        // Set lock dice to false
+        lockDice = false;
+
+        // Check if the fragment listener is connected, get if text is hidden
+        if (mListener != null) {
+            txtHidden = mListener.getTextHidden();
+
+            // Check if text should be hidden
+            if (txtHidden) {
+                // Set the visibility of labels to invisible
+                lblScores.setVisibility(View.INVISIBLE);
+                lblRoll.setVisibility(View.INVISIBLE);
+                lblRound.setVisibility(View.INVISIBLE);
+                lblScore.setVisibility(View.INVISIBLE);
+
+                // Set the visibility of text views to invisible
+                txtRollNr.setVisibility(View.INVISIBLE);
+                txtRoundNr.setVisibility(View.INVISIBLE);
+                txtScore.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        // Inflate the layout for this fragment
+        return view;
+    }
+
+    /**
+     * Init the imageviews of the fragment
+     */
+    public void initImages() {
         // Init the image views for the dice
         img1 = (ImageView)view.findViewById(R.id.imageView);
         img2 = (ImageView)view.findViewById(R.id.imageView2);
@@ -133,13 +176,12 @@ public class Play extends Fragment implements View.OnClickListener {
         imgFiles.put(10, R.drawable.locked5);
         imgFiles.put(11, R.drawable.locked6);
 
-        // Set the image resources
-        int count = 0;
-        for (ImageView iv: imgs) {
-            iv.setImageResource(imgFiles.get(count));
-            count++;
-        }
+    }
 
+    /**
+     * Init the text and label fields in the fragment
+     */
+    public void initTextsAndLabels() {
         // Set all labels in the fragment
         lblScores = (TextView)view.findViewById(R.id.lblScores);
         lblRoll = (TextView)view.findViewById(R.id.txtRollLabel);
@@ -150,31 +192,6 @@ public class Play extends Fragment implements View.OnClickListener {
         txtRollNr = (TextView)view.findViewById(R.id.txtRoll);
         txtRoundNr = (TextView)view.findViewById(R.id.txtRound);
         txtScore = (TextView)view.findViewById(R.id.txtScore);
-
-        // Set lock dice to false
-        lockDice = false;
-
-        // Check if the fragment listener is connected, get if text is hidden
-        if (mListener != null) {
-            txtHidden = mListener.getTextHidden();
-
-            // Check if text should be hidden
-            if (txtHidden) {
-                // Set the visibility of labels to invisible
-                lblScores.setVisibility(View.INVISIBLE);
-                lblRoll.setVisibility(View.INVISIBLE);
-                lblRound.setVisibility(View.INVISIBLE);
-                lblScore.setVisibility(View.INVISIBLE);
-
-                // Set the visibility of text views to invisible
-                txtRollNr.setVisibility(View.INVISIBLE);
-                txtRoundNr.setVisibility(View.INVISIBLE);
-                txtScore.setVisibility(View.INVISIBLE);
-            }
-        }
-
-        // Inflate the layout for this fragment
-        return view;
     }
 
     @Override
@@ -221,9 +238,9 @@ public class Play extends Fragment implements View.OnClickListener {
                 found = true;
                 break;
         }
-        Log.d("Play", lockDice.toString());
+
         // Check if the clicked element has been found and if it is a die, is not locked
-        if (!found && !lockDice) {
+        if (!found) {
             // Get the image number from the clicked die
             int imgNr = getRightImg(v);
             // Call the fragment listener to update the die image
@@ -262,6 +279,7 @@ public class Play extends Fragment implements View.OnClickListener {
     public void updateImages(Dice dice) {
         // Run through each of the images
         for(int i = 0; i < imgs.size(); i++) {
+            Log.d("DICE -->", dice.getDie(i).getDieValue().toString());
             // Init chosen offset
             Integer chosenOffset = 0;
             // Check if the die is chosen

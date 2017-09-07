@@ -1,4 +1,4 @@
-package com.example.arnarfreyr.dicegame3000;
+package com.nozagleh.dicegame3000;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +38,7 @@ public class Highscore extends AppCompatActivity {
         userData = sql.getHighScoreList();
 
         // Set the recycler view adapter, pass the user data
-        mAdapter = new ScoreRecyclerViewAdapter(getApplicationContext(), userData);
+        mAdapter = new ScoreRecyclerViewAdapter(getApplicationContext(), userData, false);
         mRecyclerView.setAdapter(mAdapter);
         // Set the layout manager for the recycler view
         mLayoutManager = new LinearLayoutManager(this);

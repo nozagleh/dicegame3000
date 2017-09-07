@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/frag_play"
-    tools:context="com.example.arnarfreyr.dicegame3000.Play">
+    tools:context="com.nozagleh.dicegame3000.Play">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -163,6 +163,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red1" />
 
                 <ImageView
@@ -171,6 +172,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red2" />
             </TableRow>
 
@@ -187,6 +189,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red3" />
 
                 <ImageView
@@ -195,6 +198,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red4" />
 
             </TableRow>
@@ -211,6 +215,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red5" />
 
                 <ImageView
@@ -219,6 +224,7 @@
                     android:layout_height="80dp"
                     android:layout_weight="50"
                     android:clickable="true"
+                    android:contentDescription="@string/default_desc_dice"
                     app:srcCompat="@drawable/red6" />
             </TableRow>
 

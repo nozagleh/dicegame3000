@@ -1,4 +1,4 @@
-package com.example.arnarfreyr.dicegame3000;
+package com.nozagleh.dicegame3000;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -91,18 +91,25 @@ public class Score extends Fragment {
 
         // Init a new array list for the user data
         ArrayList<UserData> data = new ArrayList<>();
+
+        ArrayList<Integer> bets = mGame.getBetsDone();
+        int counter = 0;
+
         // Get all the round scores of the previous game
         for (int score: mGame.getTotalScore()) {
             // Init a new temporary user data object
             UserData ud = new UserData();
             // Set the score
             ud.setScore(score);
+
+            ud.setBetType(bets.get(counter));
+            counter++;
             // Add the user data to the array list of user data
             data.add(ud);
         }
 
         // Set the adapter for the recycler view, along with the data
-        mAdapter = new ScoreRecyclerViewAdapter(getContext(), data);
+        mAdapter = new ScoreRecyclerViewAdapter(getContext(), data, true);
         mRecyclerView.setAdapter(mAdapter);
 
         // Set the layout manager for the recycler view
