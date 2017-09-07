@@ -238,9 +238,9 @@ public class Play extends Fragment implements View.OnClickListener {
                 found = true;
                 break;
         }
-        Log.d("Play", lockDice.toString());
+
         // Check if the clicked element has been found and if it is a die, is not locked
-        if (!found && !lockDice) {
+        if (!found) {
             // Get the image number from the clicked die
             int imgNr = getRightImg(v);
             // Call the fragment listener to update the die image
@@ -279,6 +279,7 @@ public class Play extends Fragment implements View.OnClickListener {
     public void updateImages(Dice dice) {
         // Run through each of the images
         for(int i = 0; i < imgs.size(); i++) {
+            Log.d("DICE -->", dice.getDie(i).getDieValue().toString());
             // Init chosen offset
             Integer chosenOffset = 0;
             // Check if the die is chosen
@@ -306,7 +307,6 @@ public class Play extends Fragment implements View.OnClickListener {
      */
     public void updateButtonText(int stringId) {
         // Set the text of the button
-        Log.d("Play", "updating text to " + getString(stringId));
         btnRoll.setText(stringId);
     }
 

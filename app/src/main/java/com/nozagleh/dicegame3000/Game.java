@@ -131,8 +131,9 @@ public class Game extends FragmentActivity
                 // Update the scores text if the done bets are not empty
                 if (tempBets) {
                     showScores();
-                    startGame();
                 }
+
+                startGame();
 
                 if (game.getIsStarted())
                     playFrag.updateButtonText(R.string.btn_roll);
@@ -148,6 +149,7 @@ public class Game extends FragmentActivity
     public void restoreRollsAndRound() {
         // Get roll number from SP(Shared Preferences)
         Integer rollNr = sharedPreferences.getInt(getString(R.string.preference_roll_nr), -1);
+        Log.d("Restore Roll", rollNr.toString());
         game.setRollNr(rollNr);
         // Get round number from SP
         Integer roundNr = sharedPreferences.getInt(getString(R.string.preference_round_nr), -1);
@@ -278,7 +280,7 @@ public class Game extends FragmentActivity
 
             // Add to shared preferences that the preferences are on
             editor.putBoolean(getString(R.string.preference_set), true);
-
+            Log.d("ROLL NR: ", game.getRollNr().toString());
             // Put roll and round numbers
             editor.putInt(getString(R.string.preference_roll_nr), game.getRollNr());
             editor.putInt(getString(R.string.preference_round_nr), game.getRoundNr());
@@ -426,12 +428,12 @@ public class Game extends FragmentActivity
         if(game.endOfRound() && game.isLastRound()) {
             // Show the score fragment
             scoreFragment();
+        }else {
+            // Display the roll number
+            playFrag.displayRoll(game.getRollNr());
+            // Update the images
+            playFrag.updateImages(game.getDice());
         }
-
-        // Display the roll number
-        playFrag.displayRoll(game.getRollNr());
-        // Update the images
-        playFrag.updateImages(game.getDice());
     }
 
     /**
@@ -447,12 +449,12 @@ public class Game extends FragmentActivity
         // Check if the game has actually ended, if so, take the user to the final fragment
         if (game.hasGameEnded())
             scoreFragment();
-
+        Log.d("IS SCORE DIAG ON", scoreDiagOn.toString());
         // Check if the score dialog is on, do not roll if the score dialog is shown
         if (!scoreDiagOn)
             game.roll();
-        else
-            scoreDiagOn = false;
+
+        playFrag.updateImages(game.getDice());
 
         // Check if the rolls have been reset, and the if the chosen bet is done
         if (game.isRollReset() && game.betAlreadyDone()) {
@@ -473,6 +475,7 @@ public class Game extends FragmentActivity
         // Check if the game has been started, if not, return
         if (!game.getIsStarted())
             return;
+
         // Set the die chosen
         game.setDieChosen(dieNr);
 
@@ -489,6 +492,7 @@ public class Game extends FragmentActivity
         // Start the game
         game.startGame();
 
+        // Check if play fragment exists and if so, show the scores
         if (playFrag != null)
             showScores();
     }
@@ -598,6 +602,9 @@ public class Game extends FragmentActivity
 
     }
 
+    /**
+     * Save the current bet to the shared preferences
+     */
     public void saveBetToSP() {
         SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -744,11 +751,16 @@ public class Game extends FragmentActivity
                     .remove(overlayFrag)
                     .commit();
             // Roll the dice
-            game.roll();
+            this.scoreDiagOn = false;
+
+            // Run pre roll checks and roll if needed
+            preRollChecks();
 
             // Check if play fragment is present and update the text
-            if (playFrag != null)
+            if (playFrag != null && (!game.isLastRound() && !game.isLastRoll())) {
                 playFrag.updateButtonText(R.string.btn_roll);
+                playFrag.displayRoll(game.getRollNr());
+            }
         }
         
     }

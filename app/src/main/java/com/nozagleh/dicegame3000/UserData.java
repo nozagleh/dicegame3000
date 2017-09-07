@@ -13,11 +13,13 @@ package com.nozagleh.dicegame3000;
 public class UserData {
     private String name = null;
     private Integer score = null;
+    private Integer betType = null;
 
     /**
      * Empty constructor.
      */
     public UserData() {
+        this.betType = -1;
     }
 
     /**
@@ -28,6 +30,7 @@ public class UserData {
     public UserData(String name, Integer score) {
         this.name = name;
         this.score = score;
+        this.betType = -1;
     }
 
     /**
@@ -60,5 +63,13 @@ public class UserData {
      */
     public Integer getScore() {
         return this.score;
+    }
+
+    public Integer getBetType() {
+        return betType;
+    }
+
+    public void setBetType(Integer betType) {
+        this.betType = betType;
     }
 }

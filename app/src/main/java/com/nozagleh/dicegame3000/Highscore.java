@@ -38,7 +38,7 @@ public class Highscore extends AppCompatActivity {
         userData = sql.getHighScoreList();
 
         // Set the recycler view adapter, pass the user data
-        mAdapter = new ScoreRecyclerViewAdapter(getApplicationContext(), userData);
+        mAdapter = new ScoreRecyclerViewAdapter(getApplicationContext(), userData, false);
         mRecyclerView.setAdapter(mAdapter);
         // Set the layout manager for the recycler view
         mLayoutManager = new LinearLayoutManager(this);

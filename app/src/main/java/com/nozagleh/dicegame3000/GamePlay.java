@@ -1,5 +1,7 @@
 package com.nozagleh.dicegame3000;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -249,8 +251,9 @@ public class GamePlay {
         // Add a roll
         addRoll();
 
+        Log.d("ROLLING", "DICE");
         // Check if it is the first roll
-        if( this.rollNr == 1 ) {
+        if( getRollNr() == 1 ) {
             // Repopulate the dice with new dice values
             this.dice.fill();
         }
