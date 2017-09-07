@@ -35,6 +35,8 @@ public class Game extends FragmentActivity
     // Init an SQL manager
     SQLManager sql;
 
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +63,7 @@ public class Game extends FragmentActivity
 
 
             // Get the shared preferences
-            SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+            sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
             // Check if the preferences should be used
             if (!sharedPreferences.getBoolean(getString(R.string.preference_set), false)) {
                 // If not, fill the dice group
@@ -88,106 +90,21 @@ public class Game extends FragmentActivity
         super.onResume();
 
         // Get the shared preferences
-        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+        sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
 
         // Check if the shared preferences should be used
         if (sharedPreferences.getBoolean(getString(R.string.preference_set), false)) {
-
             // Set shared preferences
             sharedPrefOn = true;
 
-            // Get roll number from SP(Shared Preferences)
-            Integer rollNr = sharedPreferences.getInt(getString(R.string.preference_roll_nr), -1);
-            game.setRollNr(rollNr);
-            // Get round number from SP
-            Integer roundNr = sharedPreferences.getInt(getString(R.string.preference_round_nr), -1);
-            game.setRoundNr(roundNr);
-
-            // Get dice rolls from SP
-            String tempDiceRolls = sharedPreferences.getString(getString(R.string.preference_rolls), "-1");
-            // Init an empty Die group
-            Dice dice = new Dice();
-            // Check if the dice are empty
-            if (!tempDiceRolls.isEmpty()) {
-                // Split the rolls string
-                String[] diceRolls = tempDiceRolls.split(",");
-                // Get all dice and clear
-                game.getAllDice().clear();
-
-                // Run through each die
-                for (int i = 0; i < diceRolls.length; i++) {
-                    Die die = new Die();
-                    die.setDieValue(Integer.valueOf(diceRolls[i]));
-
-                    // Add the die to dice group
-                    dice.addDie(die);
-
-                    // Check when the die number is mod(6), and init a new Dice group
-                    if (((i+1) % 6) == 0) {
-                        game.addDice(dice);
-                        dice = new Dice();
-                    }
-                }
-            }
-
-            // Get the scores from SP
-            String tempScores = sharedPreferences.getString(getString(R.string.preference_scores), "-1");
-            // Check if the scores are empty
-            if (!tempScores.isEmpty()) {
-                // Split the score string
-                String[] scores = tempScores.split(",");
-                // Clear the scores
-                game.getTotalScore().clear();
-                // Run through each score and add the round score
-                for (int i = 0; i < scores.length; i++) {
-                    game.setRoundScore(Integer.valueOf(scores[i]));
-                }
-            }
-
-            // Get current dice from SP, split the string
-            String tempCurrentDice = sharedPreferences.getString(getString(R.string.preference_current_dice), "-1");
-            String[] currentDice = tempCurrentDice.split(",");
-
-            // Get the chosen current dice from SP, split the string
-            String tempChosenDice = sharedPreferences.getString(getString(R.string.preference_chosen_dice), "-1");
-            String[] chosenDice = tempChosenDice.split(",");
-
-            // Init a clean Dice group
-            dice = new Dice();
-            // Run through the Dice group
-            for (int i = 0; i < currentDice.length; i++) {
-                Die die = new Die();
-                // Set the die value
-                die.setDieValue(Integer.valueOf(currentDice[i]));
-                // Set if the die is chosen or not
-                if (Integer.valueOf(chosenDice[i]) == 1)
-                    die.setIfChosen(true);
-
-                // Add the Die to Dice
-                dice.addDie(die);
-            }
-
-            // Set the game dice group
-            game.setDice(dice);
-
-            int currentBet = sharedPreferences.getInt(getString(R.string.preference_current_bet), -1);
-            if (currentBet != -1)
-                game.setBetType(currentBet);
-
-            // Get done bets from SP
-            String tempBets = sharedPreferences.getString(getString(R.string.preference_done_bets), "-1");
-            // Check if the bets string is empty
-            if (!tempBets.isEmpty()) {
-                // Split the string
-                String[] chosenBets = tempBets.split(",");
-                // Clear any remaining bets, if any
-                game.getBetsDone().clear();
-
-                // Run through the bets and add them
-                for (int i = 0; i < chosenBets.length; i++) {
-                    game.addBet(Integer.valueOf(chosenBets[i]));
-                }
-            }
+            // Restore the rolls and round
+            restoreRollsAndRound();
+            // Restore the score
+            restoreScore();
+            // Restore the dice groups
+            restoreDice();
+            // Restore the bets, and set a flag if any bets are actually completed
+            Boolean tempBets = restoreBets();
 
             // Check if the game is actually already finished
             if (sharedPreferences.getBoolean(getString(R.string.preference_game_ended), false)) {
@@ -212,10 +129,134 @@ public class Game extends FragmentActivity
                 }
 
                 // Update the scores text if the done bets are not empty
-                if (!tempBets.isEmpty())
+                if (tempBets) {
                     showScores();
+                    startGame();
+                }
+
+                if (game.getIsStarted())
+                    playFrag.updateButtonText(R.string.btn_roll);
+                if (game.isLastRoll())
+                    playFrag.updateButtonText(R.string.txt_end_round);
             }
         }
+    }
+
+    /**
+     * Restore the roll nr, round nr, and dice rolls from the shared preferences
+     */
+    public void restoreRollsAndRound() {
+        // Get roll number from SP(Shared Preferences)
+        Integer rollNr = sharedPreferences.getInt(getString(R.string.preference_roll_nr), -1);
+        game.setRollNr(rollNr);
+        // Get round number from SP
+        Integer roundNr = sharedPreferences.getInt(getString(R.string.preference_round_nr), -1);
+        game.setRoundNr(roundNr);
+
+        // Get dice rolls from SP
+        String tempDiceRolls = sharedPreferences.getString(getString(R.string.preference_rolls), "-1");
+        // Init an empty Die group
+        Dice dice = new Dice();
+        // Check if the dice are empty
+        if (!tempDiceRolls.isEmpty()) {
+            // Split the rolls string
+            String[] diceRolls = tempDiceRolls.split(",");
+            // Get all dice and clear
+            game.getAllDice().clear();
+
+            // Run through each die
+            for (int i = 0; i < diceRolls.length; i++) {
+                Die die = new Die();
+                die.setDieValue(Integer.valueOf(diceRolls[i]));
+
+                // Add the die to dice group
+                dice.addDie(die);
+
+                // Check when the die number is mod(6), and init a new Dice group
+                if (((i+1) % 6) == 0) {
+                    game.addDice(dice);
+                    dice = new Dice();
+                }
+            }
+        }
+    }
+
+    /**
+     * Restore the score from the shared preferences
+     */
+    public void restoreScore() {
+        // Get the scores from SP
+        String tempScores = sharedPreferences.getString(getString(R.string.preference_scores), "-1");
+        // Check if the scores are empty
+        if (!tempScores.isEmpty()) {
+            // Split the score string
+            String[] scores = tempScores.split(",");
+            // Clear the scores
+            game.getTotalScore().clear();
+            // Run through each score and add the round score
+            for (int i = 0; i < scores.length; i++) {
+                game.setRoundScore(Integer.valueOf(scores[i]));
+            }
+        }
+    }
+
+    /**
+     * Restore current dice, and chosen dice from the shared preferences
+     */
+    public void restoreDice() {
+        // Get current dice from SP, split the string
+        String tempCurrentDice = sharedPreferences.getString(getString(R.string.preference_current_dice), "-1");
+        String[] currentDice = tempCurrentDice.split(",");
+
+        // Get the chosen current dice from SP, split the string
+        String tempChosenDice = sharedPreferences.getString(getString(R.string.preference_chosen_dice), "-1");
+        String[] chosenDice = tempChosenDice.split(",");
+
+        // Init a clean Dice group
+        Dice dice = new Dice();
+        // Run through the Dice group
+        for (int i = 0; i < currentDice.length; i++) {
+            Die die = new Die();
+            // Set the die value
+            die.setDieValue(Integer.valueOf(currentDice[i]));
+            // Set if the die is chosen or not
+            if (Integer.valueOf(chosenDice[i]) == 1)
+                die.setIfChosen(true);
+
+            // Add the Die to Dice
+            dice.addDie(die);
+        }
+
+        // Set the game dice group
+        game.setDice(dice);
+    }
+
+    /**
+     * Restore current, and done bets from the shared preferences
+     * @return Boolean true|false if any bets are done
+     */
+    public Boolean restoreBets() {
+        int currentBet = sharedPreferences.getInt(getString(R.string.preference_current_bet), -1);
+        if (currentBet != -1)
+            game.setBetType(currentBet);
+
+        // Get done bets from SP
+        String tempBets = sharedPreferences.getString(getString(R.string.preference_done_bets), "-1");
+        // Check if the bets string is empty
+        if (!tempBets.isEmpty()) {
+            // Split the string
+            String[] chosenBets = tempBets.split(",");
+            // Clear any remaining bets, if any
+            game.getBetsDone().clear();
+
+            // Run through the bets and add them
+            for (int i = 0; i < chosenBets.length; i++) {
+                game.addBet(Integer.valueOf(chosenBets[i]));
+            }
+        }
+
+        // Return a boolean which tells if there are any done bets
+        return !tempBets.isEmpty();
     }
 
     /**
@@ -226,7 +267,7 @@ public class Game extends FragmentActivity
         super.onPause();
 
         // Open up a shared preferences
-        SharedPreferences sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+        sharedPreferences = this.getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         // Put boolean if the game has actually ended
@@ -242,17 +283,8 @@ public class Game extends FragmentActivity
             editor.putInt(getString(R.string.preference_roll_nr), game.getRollNr());
             editor.putInt(getString(R.string.preference_round_nr), game.getRoundNr());
 
-            // Put values of all previous dice
-            String diceString = "";
-            Log.d("BEFORE -->", game.getAllDice().toString());
-            for (int i = 0; i < game.getAllDice().size(); i++) {
-                Log.d("SIZE? -->", String.valueOf(game.getAllDice().get(i).getDice().size()));
-                for(int x = 0; x < game.getAllDice().get(i).getDice().size(); x++) {
-                    Log.d("DIE LIST -->", game.getAllDice().get(i).getDice().get(x).getDieValue().toString());
-                    diceString += game.getAllDice().get(i).getDice().get(x).getDieValue() + ",";
-                }
-            }
             // Add the rolls
+            String diceString = extractPreviousDice();
             editor.putString(getString(R.string.preference_rolls), diceString);
 
             // Put total round scores
@@ -263,26 +295,12 @@ public class Game extends FragmentActivity
             // Add the scores
             editor.putString(getString(R.string.preference_scores), scoresString);
 
-            // Put current dice values
-            String currentDice = "";
-            Dice d = game.getDice();
-            for (Die die : d.getDice()) {
-                currentDice += die.getDieValue().toString() + ",";
-            }
             // Add the current dice
+            String currentDice = extractCurrentDice();
             editor.putString(getString(R.string.preference_current_dice), currentDice);
 
-            // Put values for current chosen dice if they are chosen or not
-            String chosenString = "";
-            for (Die die : game.getDice().getDice()) {
-                if (die.getIfChosen()) {
-                    chosenString += "1";
-                }else {
-                    chosenString += "0";
-                }
-                chosenString += ",";
-            }
             // Add current chosen dice
+            String chosenString = extractChosenDice();
             editor.putString(getString(R.string.preference_chosen_dice), chosenString);
 
             // Create a bet string of done bets
@@ -296,6 +314,60 @@ public class Game extends FragmentActivity
 
         // Apply the preferences
         editor.apply();
+    }
+
+    /**
+     * Extract the used dice values to a single string
+     *
+     * @return String string of dice used
+     */
+    public String extractPreviousDice() {
+        // Put values of all previous dice
+        String diceString = "";
+        Log.d("BEFORE -->", game.getAllDice().toString());
+        for (int i = 0; i < game.getAllDice().size(); i++) {
+            Log.d("SIZE? -->", String.valueOf(game.getAllDice().get(i).getDice().size()));
+            for(int x = 0; x < game.getAllDice().get(i).getDice().size(); x++) {
+                Log.d("DIE LIST -->", game.getAllDice().get(i).getDice().get(x).getDieValue().toString());
+                diceString += game.getAllDice().get(i).getDice().get(x).getDieValue() + ",";
+            }
+        }
+
+        // Return the string with the values
+        return diceString;
+    }
+
+    /**
+     * Extract the current dice values to a single string
+     *
+     * @return String string of current dice values
+     */
+    public String extractCurrentDice() {
+        // Put current dice values
+        String currentDice = "";
+        Dice d = game.getDice();
+        for (Die die : d.getDice()) {
+            currentDice += die.getDieValue().toString() + ",";
+        }
+
+        // Return the string with the values
+        return currentDice;
+    }
+
+    public String extractChosenDice() {
+        // Put values for current chosen dice if they are chosen or not
+        String chosenString = "";
+        for (Die die : game.getDice().getDice()) {
+            if (die.getIfChosen()) {
+                chosenString += "1";
+            }else {
+                chosenString += "0";
+            }
+            chosenString += ",";
+        }
+
+        // Return the string with the values
+        return chosenString;
     }
 
     /**
@@ -325,26 +397,9 @@ public class Game extends FragmentActivity
         // Set shared preferences on, on roll click
         sharedPrefOn = true;
 
-        // Check if the game has been started, if not, start one
-        if (!game.getIsStarted())
-                startGame();
-
-        // Check if the game has actually ended, if so, take the user to the final fragment
-        if (game.hasGameEnded())
-            scoreFragment();
-
-        // Check if the score dialog is on, do not roll if the score dialog is shown
-        if (!scoreDiagOn)
-            game.roll();
-        else
-            scoreDiagOn = false;
-
-        // Check if the rolls have been reset, and the if the chosen bet is done
-        if (game.isRollReset() && game.betAlreadyDone()) {
-            // Show the chosen bet snackbar error message
-            showBetSnack();
+        // Do pre roll checks
+        if (!preRollChecks())
             return;
-        }
 
         // Check if it is the end of the round
         if(game.endOfRound()) {
@@ -377,6 +432,36 @@ public class Game extends FragmentActivity
         playFrag.displayRoll(game.getRollNr());
         // Update the images
         playFrag.updateImages(game.getDice());
+    }
+
+    /**
+     * Do various pre roll checks, such if the game has been started, if it has ended.
+     *
+     * @return Boolean returns false if the roll should be aborted
+     */
+    public Boolean preRollChecks() {
+        // Check if the game has been started, if not, start one
+        if (!game.getIsStarted())
+            startGame();
+
+        // Check if the game has actually ended, if so, take the user to the final fragment
+        if (game.hasGameEnded())
+            scoreFragment();
+
+        // Check if the score dialog is on, do not roll if the score dialog is shown
+        if (!scoreDiagOn)
+            game.roll();
+        else
+            scoreDiagOn = false;
+
+        // Check if the rolls have been reset, and the if the chosen bet is done
+        if (game.isRollReset() && game.betAlreadyDone()) {
+            // Show the chosen bet snackbar error message
+            showBetSnack();
+            return false;
+        }
+
+        return true;
     }
 
     /**
